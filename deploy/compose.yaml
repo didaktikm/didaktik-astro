@@ -1,0 +1,11 @@
+services:
+  didaktik:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: didaktik-site:latest
+    restart: unless-stopped
+    networks: [proxy]
+networks:
+  proxy:
+    external: true

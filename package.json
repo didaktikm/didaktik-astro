@@ -1,0 +1,16 @@
+{
+  "name": "didaktik-site",
+  "version": "1.0.0",
+  "description": "didaktik.dev personal site",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  }
+}

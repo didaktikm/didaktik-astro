@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+const title = 'didaktik: Инфраструктура для эпохи автономных агентов';
+const cards = [
+  ['Инфраструктура', 'Контейнеры, прокси, сети, наблюдаемость. Просто, воспроизводимо, с бэкапами.'],
+  ['Автоматизация', 'Пайплайны и скрипты, которые убирают рутину и снижают риск ошибки.'],
+  ['ИИ-агенты', 'Локальные модели, маршрутизация, MCP. Что реально работает, а что маркетинг.'],
+];
+---
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content="Инфраструктура для эпохи автономных агентов. Platform Engineering." />
+</head>
+<body>
+<canvas id="grid" aria-hidden="true"></canvas><div class="vig"></div>
+<header class="top"><a class="logo" href="/">didaktik<span>_</span></a></header>
+<main>
+<section class="hero">
+<p class="tag">DevOps-архитектор · инфраструктура · ИИ-агенты</p>
+<h1>Инфраструктура для эпохи автономных агентов</h1>
+<p class="sub">Platform Engineering</p>
+<section class="term" id="term">
+<div class="bar"><i></i><i></i><i></i><span>guest@didaktik:~</span></div>
+<div class="out" id="out" role="log"></div>
+<form class="line" id="f" autocomplete="off"><span class="ps">$</span><input id="in" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="command" /></form>
+</section>
+<div class="chips" id="chips"></div>
+</section>
+<section class="cards">
+{cards.map(([h, p]) => <article><h2>{h}</h2><p>{p}</p></article>)}
+</section>
+<section class="notes"><h2>Заметки</h2><p>Скоро: разборы из практики.</p></section>
+</main>
+<footer><span>Контакт: <a href="mailto:hello@didaktik.dev">hello@didaktik.dev</a></span><span>© 2026 didaktik</span></footer>
+<script is:inline src="/site.js"></script>
+</body>
+</html>

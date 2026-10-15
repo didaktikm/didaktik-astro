@@ -1,0 +1,4 @@
+# add to shared proxy Caddyfile
+didaktik.dev, www.didaktik.dev {
+	reverse_proxy didaktik:80
+}
