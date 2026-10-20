@@ -1,0 +1,11 @@
+---
+interface Props { hasNotes: boolean }
+const { hasNotes } = Astro.props;
+---
+<header class="top">
+<a class="logo" href="/">didaktik<span>_</span></a>
+<nav class="nav" aria-label="Основная навигация">
+{hasNotes && <a href="/notes/">Заметки</a>}
+<a href="/about/">Обо мне</a>
+</nav>
+</header>

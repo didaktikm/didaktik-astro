@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes', ({ data }) => !data.draft);
+  return notes.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const date = entry.data.date;
+---
+<Base
+  title={`${entry.data.title} · didaktik`}
+  description={entry.data.description}
+  type="article"
+>
+<article class="page prose">
+<p class="meta"><time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time></p>
+<h1>{entry.data.title}</h1>
+<Content />
+<p><a href="/notes/">← Все заметки</a></p>
+</article>
+</Base>

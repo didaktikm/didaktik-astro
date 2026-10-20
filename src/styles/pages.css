@@ -1,0 +1,11 @@
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:1rem;top:1rem;z-index:100;padding:.5rem 1rem;background:#000;color:#fff}
+.nav{display:inline-flex;gap:1.25rem;margin-left:2rem}
+.page{max-width:720px;margin:0 auto;padding:3rem 1.25rem}
+.note-list{list-style:none;padding:0;display:grid;gap:1rem}
+.note-list time,.meta{display:block;opacity:.65;font-size:.9em}
+.prose{line-height:1.7}
+.prose pre{overflow:auto;padding:1rem;border:1px solid currentColor;border-radius:8px}
+.prose code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

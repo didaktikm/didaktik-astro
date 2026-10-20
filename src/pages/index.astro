@@ -1,4 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Cards from '../components/Cards.astro';
+import { getCollection } from 'astro:content';
+
+const latest = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
-<Base />
+<Base
+  title="didaktik: Инфраструктура для эпохи автономных агентов"
+  description="Инфраструктура для эпохи автономных агентов. Platform Engineering."
+  fx
+>
+<Hero />
+<Cards />
+{latest.length > 0 && (
+  <section class="notes">
+    <h2>Заметки</h2>
+    <ul class="note-list">
+      {latest.map((n) => (
+        <li>
+          <a href={`/notes/${n.id}/`}>{n.data.title}</a>
+          <time datetime={n.data.date.toISOString()}>{n.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
+        </li>
+      ))}
+    </ul>
+    <p><a href="/notes/">Все заметки</a></p>
+  </section>
+)}
+</Base>

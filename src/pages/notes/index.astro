@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base
+  title="Заметки · didaktik"
+  description="Разборы из практики: инфраструктура, автоматизация, ИИ-агенты."
+>
+<div class="page">
+<h1>Заметки</h1>
+{notes.length === 0 ? <p>Пока нет опубликованных заметок.</p> : (
+  <ul class="note-list">
+    {notes.map((n) => (
+      <li>
+        <a href={`/notes/${n.id}/`}>{n.data.title}</a>
+        <time datetime={n.data.date.toISOString()}>{n.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
+        <p>{n.data.description}</p>
+      </li>
+    ))}
+  </ul>
+)}
+</div>
+</Base>
