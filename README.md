@@ -1,47 +1,68 @@
 # didaktik.dev
 
-Personal site: "Infrastructure for the era of autonomous agents" / Platform Engineering.
-Russian only, static (Astro), served by Caddy in Docker. Dark node-grid background and an interactive terminal.
+Персональный сайт о платформенной инженерии и инфраструктуре для эпохи автономных агентов.
 
-## Structure
+Сайт собран на Astro как статическая страница. На главной — анимированный фон с узлами сети и интерактивный терминал-симулятор. Для локальной разработки нужен Node.js 22; сайт можно собрать в Docker и раздавать через Caddy.
 
-```
+## Структура проекта
+
+```text
 .
 ├── src/
-│   ├── layouts/Base.astro   # page markup and texts
-│   ├── pages/index.astro
-│   └── styles/global.css
+│   ├── layouts/Base.astro  # разметка и содержимое страницы
+│   ├── pages/index.astro   # главная страница
+│   └── styles/global.css   # стили
 ├── public/
-│   ├── site.js              # node grid + terminal (vanilla JS)
+│   ├── site.js             # фон сети и терминал-симулятор
 │   ├── favicon.svg
 │   └── robots.txt
 ├── deploy/
-│   ├── Caddyfile            # in-container static server
-│   ├── compose.yaml         # joins external network `proxy`, no published ports
-│   └── proxy-snippet.Caddyfile  # block for the shared Caddy proxy
-├── Dockerfile               # node build -> caddy:2-alpine
-└── .github/workflows/ci.yml
+│   ├── Caddyfile                # раздача статических файлов в контейнере
+│   ├── compose.yaml             # подключение к внешней сети proxy
+│   └── proxy-snippet.Caddyfile  # конфигурация общего Caddy-прокси
+├── Dockerfile
+└── .github/workflows/ci.yml     # сборка в GitHub Actions
 ```
 
-## Develop
+## Локальная разработка
+
+Установите зависимости и запустите сервер разработки:
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321
-npm run build    # output in dist/
+npm run dev
 ```
 
-## Deploy
+Сайт будет доступен по адресу <http://localhost:4321>.
+
+Собрать статический сайт и проверить собранную версию можно так:
 
 ```bash
-docker network create proxy        # once, if the shared proxy stack has not created it
+npm run build      # результат сборки появится в dist/
+npm run preview    # локальный просмотр сборки
+```
+
+## Развёртывание
+
+Для запуска нужны Docker с Compose и общая Docker-сеть `proxy`. Создайте её, если её ещё не создал общий стек прокси:
+
+```bash
+docker network create proxy
 docker compose -f deploy/compose.yaml up -d --build
 ```
 
-Add `deploy/proxy-snippet.Caddyfile` to the Caddyfile of the shared proxy and reload Caddy.
+Compose-файл не публикует порты на хосте: приложение доступно в сети `proxy` под именем `didaktik` на порту `80`. Добавьте содержимое `deploy/proxy-snippet.Caddyfile` в конфигурацию общего Caddy-прокси и перезагрузите его. Этот блок направляет запросы к `didaktik.dev` и `www.didaktik.dev` в контейнер сайта.
 
-## TODO
+## Публикация образа
 
-- Replace placeholder contact `hello@didaktik.dev` in `src/layouts/Base.astro`.
-- Commit `package-lock.json` after the first `npm install`, then switch Dockerfile and CI to `npm ci`.
-- Terminal answers live in `public/site.js`; edit jokes there.
+При каждом успешном push в `main`, после прохождения CI, GitHub Actions собирает Docker-образ и публикует его в GitHub Container Registry (GHCR):
+
+```text
+ghcr.io/didaktikm/didaktik-astro:build-<run_id>-<run_attempt>
+```
+
+Тег основан на ID запуска workflow и номере попытки, а не на хеше коммита; повторные запуски также получают отдельные теги. Найти точный тег можно в логе шага `meta` или среди пакетов репозитория на GitHub. Для публикации используется встроенный `GITHUB_TOKEN`; отдельные секреты настраивать не нужно.
+
+## Содержимое сайта
+
+Тексты главной страницы и контактный адрес `hello@didaktik.dev` находятся в `src/layouts/Base.astro`. Логика терминала-симулятора, его ответы и кнопки быстрого доступа — в `public/site.js`.
