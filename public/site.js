@@ -70,7 +70,7 @@ const clear=()=>{out.textContent=''};
 const isFri=()=>new Date().getDay()===5;
 
 const cmds={
-help:()=>['Система:   ls  cat <file>  pwd  whoami  id  uname  date  uptime  df  free  top  ps  env  history  clear','Контейнеры: docker ps  docker logs  kubectl get pods  systemctl status','Сеть:      ping  curl  dig  traceroute  ssh','Git/CI:    git status|log|blame|push --force  deploy  rollback  make  npm install','Infra:     terraform plan|apply|destroy  ansible  crontab  tail -f  kill -9  chmod 777','Агенты:    agents  neofetch  slo  incident  oncall','Веселье:   fortune  cowsay <текст>  coffee  vim  man  yes  sudo  rm -rf /  works','Подсказки: Tab дополняет, стрелки листают историю, клик по фону запускает пульс сети.'],
+help:()=>['Система:   ls  cat <file>  pwd  whoami  id  uname  date  uptime  df  free  top  ps  env  history  clear','Контейнеры: docker ps|logs|build|run|images|compose|exec|pull  kubectl get|describe|logs|rollout|apply|scale|delete|top  helm  systemctl status','Сеть:      ping  curl  dig  traceroute  ssh  nmap  netstat  lsof  iptables -F  certbot','Git/CI:    git status|log|blame|push --force  deploy  rollback  make  npm install  jenkins  argocd','Infra:     terraform plan|apply|destroy  ansible  crontab  tail -f  kill -9  chmod 777  journalctl  reboot  caddy','Облако:    aws  cost  backup  grep password','Агенты:    agents  neofetch  slo  incident  oncall  standup  ai','Веселье:   fortune  cowsay <текст>  coffee  vim  man  yes  sudo  rm -rf /  works','Подсказки: Tab дополняет, стрелки листают историю, клик по фону запускает пульс сети.'],
 whoami:()=>['guest'],
 id:()=>['uid=1000(guest) gid=1000(guest) groups=1000(guest),0(иллюзия_контроля)'],
 pwd:()=>['/home/guest'],
@@ -118,9 +118,23 @@ docker:async(a)=>{
 if(a[0]==='ps')return['CONTAINER     IMAGE            STATUS                  NAMES','a1b2c3d4e5f6  caddy:2-alpine   Up 41 days              proxy','9f8e7d6c5b4a  postgres:16      Up 41 days (healthy)    db','0c1d2e3f4a5b  agent:latest     Restarting (1) 3 sec    agent-reviewer','7a6b5c4d3e2f  nginx:latest     Exited (0) 2 yrs ago    do-not-delete'];
 if(a[0]==='logs'){await play([['[info]  starting...',''],['[info]  ready',''],['[warn]  deprecated, will be removed in v2 (в 2019 году)','warn'],['[error] connection refused: db:5432','bad'],['[info]  retrying in 1s ... (бесконечно)','']],320);return[]}
 if(a[0]==='system'&&a[1]==='prune')return['Deleted 214 objects. Reclaimed 38GB.','И один контейнер, который был нужен.'];
-return['docker: попробуйте docker ps, docker logs или docker system prune'];},
+if(a[0]==='build'){await play([['Sending build context to Docker daemon  4.2GB','warn'],['Step 1/9 : FROM ubuntu:latest',''],['Step 4/9 : RUN apt-get install everything','warn'],['Step 7/9 : COPY . .  (вместе с node_modules и .git)','warn']],420);return['Successfully built 3f2a1b9c. Размер образа: 4.7GB. Для статического сайта.','.dockerignore существует. Серьёзно.']}
+if(a[0]==='run')return['docker: Error response from daemon: port is already allocated.','Порт занял кто-то, кто очень хотел быть первым. Скорее всего, вы же, три дня назад.'];
+if(a[0]==='images')return['REPOSITORY   TAG      SIZE','app          latest   4.7GB','app          latest2  4.7GB','<none>       <none>   4.7GB   (призраки прошлых релизов)'];
+if(a[0]==='compose')return['[+] Running 3/4',' ✔ Container db     Healthy',' ✔ Container proxy  Started',' ✘ Container app    Exited (1)','app | Error: cannot connect to db','db: «у меня всё хорошо». Healthcheck проверяет только то, что процесс жив.'];
+if(a[0]==='exec')return['OCI runtime exec failed: executable file not found in $PATH','В alpine нет bash. И не будет. Используйте sh и смиритесь.'];
+if(a[0]==='pull')return['toomanyrequests: You have reached your pull rate limit.','Подождите час. Или заплатите. Или соберите всё сами, как в 2005.'];
+return['docker: попробуйте docker ps, logs, build, run, images, compose, exec, pull или system prune'];},
 kubectl:(a)=>{
 if(a[0]==='get'&&/pods?/.test(a[1]||''))return['NAME            READY  STATUS            RESTARTS  AGE','api-7d9f8       1/1    Running           0         12d','worker-5c4b2    0/1    CrashLoopBackOff  47        3h','agent-6f1a0     1/1    Running           3         2d','legacy-0        0/1    Pending           0         2y'];
+if(a[0]==='get'&&/nodes?/.test(a[1]||''))return['NAME     STATUS     ROLES    AGE','node-1   Ready      worker   400d','node-2   NotReady   worker   400d   (никто не смотрел)','node-3   Ready      control  400d   (единственный, кто работает)'];
+if(a[0]==='describe')return['Events:','  Warning  FailedScheduling  0/3 nodes are available: 3 Insufficient cpu.','  Warning  BackOff           Back-off restarting failed container','Если коротко: кластер вас не любит. Подробности на 4000 строк YAML.'];
+if(a[0]==='logs')return['Error from server (BadRequest): container is waiting to start: CrashLoopBackOff','Логов не будет. Контейнер умер, не оставив записки.'];
+if(a[0]==='rollout')return['deployment.apps/api restarted','Хорошая новость: перезапустилось. Плохая: проблема тоже перезапустилась.'];
+if(a[0]==='delete')return['Error from server (Forbidden): namespaces production is forbidden','Спасибо, RBAC. Вы только что избежали резюме с пометкой «удалил прод».'];
+if(a[0]==='apply')return['deployment.apps/api configured','service/api unchanged','configmap/app-config configured  (и теперь всё сломано по-новому)'];
+if(a[0]==='scale')return['deployment.apps/api scaled to 0','Поздравляем: нулевой даунтайм заменён нулевым аптаймом.'];
+if(a[0]==='top')return['NAME          CPU     MEMORY','api-7d9f8     12m     9800Mi   (утечка памяти это фича)','worker-5c4b2  1998m   64Mi     (работает за двоих и ненавидит всех)'];
 return['The connection to the server localhost:8080 was refused - did you specify the right host or port?'];},
 systemctl:(a)=>a[0]==='status'?['● caddy.service - Caddy','   Active: active (running) since Mon, 41 days ago','● friday-deploy.service','   Active: failed (Result: exit-code)  (по пятницам оно всегда failed)']:['Failed to connect to bus: Нет такой магии.'],
 git:async(a)=>{
@@ -146,6 +160,24 @@ neofetch:()=>['guest@didaktik','--------------','OS:     didaktik.dev','Shell:  
 agents:async()=>{await play([['spawn planner      ...',''],['spawn researcher   ...',''],['spawn reviewer     ...',''],['planner     -> researcher: need sources','ok'],['researcher  -> reviewer:   draft ready','ok'],['reviewer    -> planner:    rejected (nitpicks)','warn']],420);return['Агенты вошли в бесконечный цикл ревью. Это нормально.']},
 hire:()=>['hello@didaktik.dev','Доступен для интересных задач. Скучных у нас и так хватает.'],
 contact:()=>cmds.hire(),
+helm:(a)=>a[0]==='install'||a[0]==='upgrade'?['Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress','Релиз завис в pending-upgrade. Лечится так: helm rollback, молитва или ручное удаление секрета релиза (в проде, конечно).']:['helm: попробуйте helm upgrade и заварите чай'],
+aws:()=>['An error occurred (AccessDenied) when calling the Everything operation:','User guest is not authorized to perform: быть счастливым','Зато IAM-политика на 4000 строк написана с любовью.'],
+cost:()=>['Cloud bill (текущий месяц): $48,213.07','Топ расходов: GPU-инстанс, забытый в 2022, NAT Gateway и «временный» бакет.','Экономия достигается выключением. Но выключать страшно: вдруг это кто-то использует.'],
+iptables:(a,raw)=>/-F|flush/i.test(raw)?['iptables: правила сброшены.','Connection to prod closed by remote host.','Ваш SSH-доступ тоже был правилом. Звоните провайдеру, ищите KVM-консоль.']:['iptables: попробуйте iptables -F (в этом терминале безопасно, на проде это резюме)'],
+grep:(a,raw)=>/password|secret|token|key/i.test(raw)?['config.yaml:12:  password: admin','.env.backup:3:  TOKEN=abc123  (закоммичен в 2021)','deploy.sh:7:  # TODO: убрать пароль из скрипта','Найдено 3 секрета. Нет, не утекли. Пока что.']:['grep: ничего не найдено (подозрительно)'],
+lsof:()=>['COMMAND  PID   USER   NAME','node     4242  guest  TCP *:3000 (LISTEN)   dev-сервер с прошлого вторника','java     1337  guest  TCP *:8080 (LISTEN)   вот кто занял ваш порт'],
+netstat:()=>cmds.lsof(),
+journalctl:()=>['-- Logs begin at Mon 2019-03-04 --','Oct 15 03:12:01 prod systemd[1]: Started nightly-miracle.service.','Oct 15 03:12:02 prod app[777]: panic: not implemented  (но как-то же работало)','Oct 15 03:12:03 prod kernel: Out of memory: Killed process 777 (app)','Вердикт: OOM killer снова принял за вас сложное решение.'],
+certbot:()=>['Certificate expires in 2 days.','Renewal failed: порт 80 занят прокси, который вы настроили полгода назад.','Это не баг. Это сюрприз с датой.'],
+nmap:()=>['Nmap scan report for prod (10.0.0.5)','22/tcp    open  ssh    (пароль: root)','3306/tcp  open  mysql  (наружу, как и задумано)','6379/tcp  open  redis  (без пароля, ведь так проще)','Это не отчёт сканера. Это описание вашей инфраструктуры.'],
+reboot:()=>['Connection to prod closed by remote host.','Аптайм 412 дней сброшен. Теперь выясняем, что из этого жило только в памяти.'],
+shutdown:()=>cmds.reboot(),
+argocd:()=>['application api: OutOfSync / Degraded','Sync: Syncing... Syncing... Syncing...','GitOps это когда зависаешь декларативно.'],
+jenkins:()=>['Started by timer','[Pipeline] stage (Build)  FAILED','Билд зелёный в 1 из 11 запусков. Нажимайте rebuild, пока не повезёт. Это называется «флаки-тесты».'],
+standup:()=>['Вчера: чинил то, что сломал позавчера.','Сегодня: чиню то, что сломал вчера.','Блокеры: хочу в отпуск.'],
+ai:()=>['Агент уверенно сгенерировал команду с флагом, которого не существует.','Агент уверенно извинился. Дважды.','Агент уверенно сгенерировал ещё одну. Её вы почти запустили.'],
+caddy:(a)=>a[0]==='validate'?['Valid configuration','(синтаксис верный, смысл не проверялся)']:['caddy: попробуйте caddy validate'],
+backup:()=>['Последний бэкап: 14 месяцев назад','Проверка восстановления: не проводилась','Статус: надежда.'],
 rm:async(a,raw)=>{if(!/-\w*r\w*f|-\w*f\w*r/.test(raw))return['rm: missing operand'];await play([['removing /usr ...','warn'],['removing /var ...','warn'],['removing /home ...','warn']],450);return['Шучу. Файловая система read-only, бэкапы в трёх местах (проверены).']}
 };
 /* fork bomb easter egg */
@@ -166,6 +198,6 @@ else if(e.ctrlKey&&e.key.toLowerCase()==='l'){e.preventDefault();clear()}
 else if(e.ctrlKey&&e.key.toLowerCase()==='c'){e.preventDefault();input.value='';print('^C','warn')}});
 root.addEventListener('click',()=>input.focus());
 
-['docker ps','kubectl get pods','git blame','terraform destroy','incident','oncall','fortune','help'].forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.addEventListener('click',()=>{if(busy)return;hist.push(t);hi=hist.length;run(t)});chips.appendChild(b)});
+['docker ps','kubectl get pods','docker build .','helm upgrade','kubectl delete','git blame','terraform destroy','iptables -F','cost','backup','incident','oncall','fortune','help'].forEach(t=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.addEventListener('click',()=>{if(busy)return;hist.push(t);hi=hist.length;run(t)});chips.appendChild(b)});
 print('didaktik shell 0.2. Введите "help" или нажмите на подсказку ниже.','ok');
 })();
