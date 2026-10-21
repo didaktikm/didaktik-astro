@@ -65,3 +65,36 @@ jobs:
             PUBLIC_BUILD_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # Стадия 3: деплой на сервер по SSH. Только для push в dev.
+  # Сервер сам тянет образ из GHCR, на сервере запускается скрипт с проверкой тега.
+  deploy:
+    name: deploy · production
+    if: github.event_name == 'push' && github.ref_name == 'dev'
+    needs: image
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Подключиться по SSH и выкатить dev-<коммит>
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_FINGERPRINT: ${{ secrets.SSH_FINGERPRINT }}
+        run: |
+          set -euo pipefail
+          TAG="dev-$(echo "$GITHUB_SHA" | cut -c1-7)"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          # Проверяем отпечаток хоста, прежде чем отправлять ключ
+          ssh-keyscan -p "$SSH_PORT" -t ed25519 "$SSH_HOST" > ~/.ssh/known_hosts 2>/dev/null
+          ssh-keygen -lf ~/.ssh/known_hosts | grep -qF "$SSH_FINGERPRINT" || { echo "отпечаток хоста не совпал" >&2; exit 1; }
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile=~/.ssh/known_hosts \
+            "$SSH_USER@$SSH_HOST" "$TAG"
