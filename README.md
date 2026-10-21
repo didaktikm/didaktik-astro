@@ -44,11 +44,11 @@ npm run preview   # просмотр собранной версии
 
 ## Публикация образа
 
-GitHub Actions на push в `main`, `dev`, `redesign` и на теги `v*` проверяет типы, собирает сайт (стадия `check`) и публикует образ в GHCR (стадия `image`):
+GitHub Actions на push в `dev` и на теги `v*` проверяет типы, собирает сайт (стадия `check`) и публикует образ в GHCR (стадия `image`):
 
 ```text
-ghcr.io/didaktikm/didaktik-astro:dev-<короткий коммит>   # любая ветка, например dev-5d6282a
-ghcr.io/didaktikm/didaktik-astro:dev                    # ветка dev
+ghcr.io/didaktikm/didaktik-astro:dev-<короткий коммит>   # сборка из ветки dev, например dev-a40db62
+ghcr.io/didaktikm/didaktik-astro:dev                    # последняя сборка ветки dev
 ghcr.io/didaktikm/didaktik-astro:v1.2.3                 # для git-тега v1.2.3
 ghcr.io/didaktikm/didaktik-astro:v1.2
 ```

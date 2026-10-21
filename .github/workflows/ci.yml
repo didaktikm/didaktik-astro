@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main, dev, redesign]
+    branches: [dev]
     tags: ['v*']
   pull_request:
 
@@ -28,7 +28,7 @@ jobs:
       - run: npm run build
 
   # Стадия 2: образ Caddy со статикой, публикуется в GHCR.
-  # Теги: dev-<короткий коммит> на каждую ветку, dev — на ветке dev, vX.Y.Z и vX.Y — на релизных тегах.
+  # Теги: dev-<короткий коммит> и dev (сборка из ветки dev), vX.Y.Z и vX.Y — на релизных тегах.
   image:
     name: image · ${{ github.ref_name }}
     if: github.event_name == 'push'
