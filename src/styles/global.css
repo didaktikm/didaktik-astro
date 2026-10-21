@@ -22,6 +22,7 @@
   --teal-hover: oklch(0.87 0.11 185);
   --teal-dim: oklch(0.82 0.12 185 / 0.13);
   --magenta: oklch(0.72 0.19 350);
+  --amber: oklch(0.84 0.13 80);
   --on-teal: oklch(0.15 0.014 230);
 
   --display: 'Unbounded', 'Onest', system-ui, sans-serif;

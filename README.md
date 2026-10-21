@@ -17,7 +17,7 @@
 │   ├── pages/             # главная, заметки, «Обо мне», 404, rss.xml, sitemap.xml
 │   ├── scripts/
 │   │   ├── trace.ts               # измерение и модель трассы
-│   │   └── console/commands.ts    # команды консоли
+│   │   └── console/               # консоль: real.ts (настоящие), devops.ts, ai.ts, fun.ts, index.ts
 │   └── styles/            # токены, базовые стили, стили внутренних страниц
 ├── deploy/
 │   ├── Caddyfile                # раздача статики в контейнере, кэш, CSP, 404
@@ -74,4 +74,4 @@ docker build --build-arg PUBLIC_BUILD_SHA=$(git rev-parse HEAD) -t didaktik-astr
 
 - Тексты главной: `src/components/Hero.astro`, `Work.astro`, `Audit.astro` (данные в `src/data/audit.ts`).
 - Заметки: `src/content/notes/*.md`.
-- Команды консоли: `src/scripts/console/commands.ts`.
+- Команды консоли: `src/scripts/console/` (настоящие в `real.ts`, шутки в `devops.ts`, `ai.ts`, `fun.ts`, реестр и справка в `index.ts`). Код консоли грузится лениво, при первом открытии.

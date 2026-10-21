@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { buildSha } from '../lib/build';
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -11,10 +12,19 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   <kbd data-console-kbd>⌘K</kbd>
 </button>
 
-<section id="console" class="sheet" role="dialog" aria-label="Консоль" hidden data-console data-notes={JSON.stringify(notes)}>
+<section
+  id="console"
+  class="sheet"
+  role="dialog"
+  aria-label="Консоль"
+  hidden
+  data-console
+  data-notes={JSON.stringify(notes)}
+  data-build={buildSha}
+>
   <div class="bar">
-    <span class="mono"><span class="dot" aria-hidden="true">●</span> didaktik shell 0.3 · guest@didaktik.dev</span>
-    <button type="button" class="close mono" data-console-close aria-label="Закрыть консоль">esc · закрыть</button>
+    <span class="mono"><span class="dot" aria-hidden="true">●</span> didaktik shell 0.4<span class="wide"> · guest@didaktik.dev</span></span>
+    <button type="button" class="close mono" data-console-close aria-label="Закрыть консоль"><span class="wide">esc · </span>закрыть</button>
   </div>
   <div class="log" role="log" aria-live="polite" data-console-log></div>
   <form class="line" data-console-form autocomplete="off">
@@ -22,11 +32,21 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     <span class="ps" aria-hidden="true">$</span>
     <input id="console-input" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="help" data-console-input />
   </form>
-  <p class="mono hint">enter выполнить · tab дополнить · ↑↓ история · esc закрыть</p>
+  <div class="chips" data-console-chips>
+    {['top', 'trace', 'curl -I', 'ping', 'slo 99.95', 'kubectl get pods', 'agent run "почини прод"', 'nvidia-smi', 'incident', 'help'].map((c) => (
+      <button type="button" class="chip mono" data-cmd={c}>{c}</button>
+    ))}
+  </div>
 </section>
 
 <script>
-  import { COMMANDS, COMMAND_NAMES, type Line, type Ctx } from '../scripts/console/commands';
+  import { Aborted, type Ctx, type Line, type LiveBlock } from '../scripts/console/types';
+
+  // Команды грузятся лениво: при первом открытии или наведении на кнопку
+  type Registry = typeof import('../scripts/console/index');
+  let registry: Registry | null = null;
+  let loading: Promise<Registry> | null = null;
+  const loadRegistry = () => (loading ??= import('../scripts/console/index').then((m) => (registry = m)));
 
   const sheet = document.querySelector<HTMLElement>('[data-console]');
   const launcher = document.querySelector<HTMLButtonElement>('.launcher');
@@ -36,37 +56,59 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     const input = sheet.querySelector<HTMLInputElement>('[data-console-input]')!;
     const openers = Array.from(document.querySelectorAll<HTMLElement>('[data-console-open]'));
     const notes = JSON.parse(sheet.dataset.notes || '[]');
+    const buildSha = sheet.dataset.build || 'local';
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const history: string[] = [];
     let cursor = 0;
-    let busy = false;
+    let running: AbortController | null = null;
     let returnFocus: HTMLElement | null = null;
     let greeted = false;
 
-    const isMac = /Mac|iPhone|iPad/.test(navigator.userAgent);
     const kbd = launcher.querySelector<HTMLElement>('[data-console-kbd]');
-    if (kbd && !isMac) kbd.textContent = 'Ctrl K';
+    if (kbd && !/Mac|iPhone|iPad/.test(navigator.userAgent)) kbd.textContent = 'Ctrl K';
+
+    const lineEl = (l: Line) => {
+      const div = document.createElement('div');
+      div.className = `ln ${l.level}`;
+      div.textContent = l.text || ' ';
+      return div;
+    };
+
+    const scroll = () => { log.scrollTop = log.scrollHeight; };
 
     const print = (lines: Line[]) => {
-      for (const l of lines) {
-        const div = document.createElement('div');
-        div.className = `ln ${l.level}`;
-        div.textContent = l.text;
-        log.appendChild(div);
-      }
-      while (log.childElementCount > 200) log.firstElementChild?.remove();
-      log.scrollTop = log.scrollHeight;
+      for (const l of lines) log.appendChild(lineEl(l));
+      while (log.childElementCount > 400) log.firstElementChild?.remove();
+      scroll();
+    };
+
+    const live = (): LiveBlock => {
+      const box = document.createElement('div');
+      box.className = 'live';
+      log.appendChild(box);
+      return {
+        set(lines) {
+          box.replaceChildren(...lines.map(lineEl));
+          // Высокий блок (top) держим верхом в кадре, чтобы шапка не уезжала
+          log.scrollTop = box.offsetHeight > log.clientHeight ? box.offsetTop : log.scrollHeight;
+        },
+      };
     };
 
     const setExpanded = (v: boolean) => openers.forEach((o) => o.setAttribute('aria-expanded', String(v)));
 
     const open = () => {
+      loadRegistry();
       if (!sheet.hidden) { input.focus(); return; }
       returnFocus = document.activeElement as HTMLElement | null;
       sheet.hidden = false;
       document.body.classList.add('console-open');
       setExpanded(true);
       if (!greeted) {
-        print([{ text: 'didaktik shell 0.3. Введите help или trace.', level: 'info' }]);
+        print([
+          { text: 'didaktik shell 0.4. Введите help или нажмите на подсказку ниже.', level: 'info' },
+          { text: 'Часть команд работает по-настоящему: curl, ping, top, ls /, slo.', level: 'muted' },
+        ]);
         greeted = true;
       }
       input.focus();
@@ -74,49 +116,112 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
     const close = () => {
       if (sheet.hidden) return;
+      running?.abort();
       sheet.hidden = true;
       document.body.classList.remove('console-open');
       setExpanded(false);
       (returnFocus && document.contains(returnFocus) ? returnFocus : launcher).focus();
     };
 
-    const ctx: Ctx = { notes, history, close, clear: () => { log.textContent = ''; } };
+    const clear = () => { log.textContent = ''; };
+
+    const setBusy = (busy: boolean) => {
+      sheet.classList.toggle('is-busy', busy);
+      input.placeholder = busy ? 'q или Ctrl+C: прервать' : 'help';
+    };
 
     const run = async (raw: string) => {
       const text = raw.trim();
-      if (!text) return;
+      if (!text || running) return;
       history.push(text);
       cursor = history.length;
       print([{ text: `$ ${text}`, level: 'muted' }]);
+
+      let reg: Registry;
+      try {
+        reg = await loadRegistry();
+      } catch {
+        loading = null;
+        print([{ text: 'консоль: не удалось загрузить команды. Проверьте сеть и повторите.', level: 'err' }]);
+        return;
+      }
+
+      const egg = reg.special(text);
+      if (egg) { print(egg); return; }
+
       const [name, ...args] = text.split(/\s+/);
-      const key = name.toLowerCase();
-      const cmd = Object.prototype.hasOwnProperty.call(COMMANDS, key) ? COMMANDS[key] : null;
+      const cmd = reg.resolve(name);
       if (!cmd) {
         print([{ text: `${name}: команда не найдена. Попробуйте help.`, level: 'err' }]);
         return;
       }
-      busy = true;
+
+      const ac = new AbortController();
+      running = ac;
+      setBusy(true);
+      const ctx: Ctx = {
+        raw: text,
+        notes,
+        history,
+        buildSha,
+        signal: ac.signal,
+        print,
+        live,
+        clear,
+        close,
+        sleep: (ms) =>
+          new Promise<void>((resolveSleep, reject) => {
+            if (ac.signal.aborted) return reject(new Aborted());
+            const t = setTimeout(resolveSleep, reduceMotion ? Math.min(ms, 120) : ms);
+            ac.signal.addEventListener('abort', () => { clearTimeout(t); reject(new Aborted()); }, { once: true });
+          }),
+      };
+
       try {
-        print(await cmd(args, ctx));
-      } catch {
-        print([{ text: `${name}: что-то пошло не так. Это тоже инцидент.`, level: 'err' }]);
+        const result = await cmd.run(args, ctx);
+        if (result && !ac.signal.aborted) print(result);
+      } catch (err) {
+        if (err instanceof Aborted || (err instanceof DOMException && err.name === 'AbortError') || ac.signal.aborted) {
+          print([{ text: '^C', level: 'muted' }]);
+        } else {
+          print([{ text: `${name}: что-то пошло не так. Это тоже инцидент.`, level: 'err' }]);
+        }
       } finally {
-        busy = false;
+        running = null;
+        setBusy(false);
       }
     };
 
-    openers.forEach((o) => o.addEventListener('click', open));
+    openers.forEach((o) => {
+      o.addEventListener('click', open);
+      o.addEventListener('pointerenter', () => { loadRegistry(); }, { once: true });
+      o.addEventListener('focus', () => { loadRegistry(); }, { once: true });
+    });
     sheet.querySelector('[data-console-close]')!.addEventListener('click', close);
+    sheet.querySelectorAll<HTMLButtonElement>('[data-cmd]').forEach((b) =>
+      b.addEventListener('click', () => {
+        if (running) return;
+        run(b.dataset.cmd!);
+        input.focus();
+      }),
+    );
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (busy) return;
+      if (running) return;
       const v = input.value;
       input.value = '';
       run(v);
     });
 
     input.addEventListener('keydown', (e) => {
+      if (running) {
+        if ((e.ctrlKey && e.key.toLowerCase() === 'c') || e.key === 'q') {
+          e.preventDefault();
+          running.abort();
+        }
+        return;
+      }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         cursor = Math.max(0, cursor - 1);
@@ -129,12 +234,16 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
         const v = input.value.trim().toLowerCase();
         if (!v || v.includes(' ')) return;
         e.preventDefault();
-        const m = COMMAND_NAMES.filter((c) => c.startsWith(v));
+        const m = (registry?.VISIBLE_NAMES ?? []).filter((c) => c.startsWith(v));
         if (m.length === 1) input.value = `${m[0]} `;
         else if (m.length > 1) print([{ text: m.join('   '), level: 'info' }]);
       } else if (e.ctrlKey && e.key.toLowerCase() === 'l') {
         e.preventDefault();
-        ctx.clear();
+        clear();
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        input.value = '';
+        print([{ text: '^C', level: 'muted' }]);
       }
     });
 
@@ -146,7 +255,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
         sheet.hidden ? open() : close();
       } else if (e.key === 'Escape' && !sheet.hidden) {
         e.preventDefault();
-        close();
+        if (running) running.abort();
+        else close();
       } else if (e.key === '/' && !typing && sheet.hidden) {
         e.preventDefault();
         open();
@@ -193,11 +303,11 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     right: 0;
     bottom: 0;
     z-index: 11;
-    height: min(420px, 70vh);
+    height: min(480px, 75vh);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px max(20px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+    gap: 10px;
+    padding: 16px max(20px, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
     background: var(--panel);
     border-top: 1px solid var(--teal);
     box-shadow: 0 -24px 64px oklch(0.1 0.01 230 / 0.7);
@@ -209,6 +319,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
   .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .dot { color: var(--teal); }
+  .is-busy .dot { color: var(--amber); animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
   .close {
     min-height: 36px;
     padding: 0 12px;
@@ -220,20 +332,23 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .close:hover { border-color: var(--teal); color: var(--fg); }
 
   .log {
+    position: relative;
     flex: 1;
     min-height: 0;
     overflow: auto;
     font-family: var(--mono);
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.75;
+    font-variant-numeric: tabular-nums;
   }
-  .log :global(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg); }
+  .log :global(.ln) { white-space: pre; color: var(--fg); }
   .log :global(.ln.info) { color: var(--teal); }
-  .log :global(.ln.warn) { color: var(--magenta); }
+  .log :global(.ln.ok) { color: var(--teal); }
+  .log :global(.ln.warn) { color: var(--amber); }
   .log :global(.ln.err) { color: var(--magenta); }
   .log :global(.ln.muted) { color: var(--muted); }
 
-  .line { display: flex; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+  .line { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
   .ps { font-family: var(--mono); color: var(--teal); }
   input {
     flex: 1;
@@ -247,6 +362,25 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     color: var(--fg);
   }
   input::placeholder { color: var(--muted); }
-  .hint { margin: 0; }
-  @media (max-width: 640px) { .hint { display: none; } }
+
+  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--teal); color: var(--fg); }
+  .is-busy .chip { opacity: 0.5; pointer-events: none; }
+
+  @media (max-width: 640px) {
+    .wide { display: none; }
+    .log { font-size: 11px; }
+    .log :global(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
+  }
 </style>
