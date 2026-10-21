@@ -2,24 +2,30 @@
 const items = [
   {
     title: 'Аудит платформ',
-    text: 'Проверяю, делает ли платформа то, что заявлено, и переживёт ли плохой день: падение узла, протухший сертификат, откат в пятницу вечером.',
-    io: 'репозитории и доступ на чтение → отчёт с доказательствами',
+    text: 'Сверяю, что платформа делает, с тем, что про неё написано, и считаю цену расхождения: часы простоя, деньги, риск. Отчёт заканчивается списком исправлений, самое дорогое сверху.',
+    io: 'доступ на чтение → находка, доказательство, цена исправления',
   },
   {
     title: 'Архитектура',
-    text: 'Решения, которые можно объяснить через полгода. Короткие записи о контексте, выборе и цене выбора.',
-    io: 'требования и ограничения → схема границ и ADR',
+    text: 'Решения, которые можно объяснить через полгода и проверить цифрами: какую метрику решение должно сдвинуть и по какому признаку мы поймём, что ошиблись.',
+    io: 'требования и ограничения → схема границ, ADR и критерий успеха',
   },
   {
     title: 'DevOps и эксплуатация',
-    text: 'Сборка, доставка, наблюдаемость. Откат, который работает, и алерт, который срабатывает раньше звонка пользователя.',
-    io: 'текущий пайплайн → воспроизводимый деплой и runbook',
+    text: 'Сборка, доставка, наблюдаемость. Откат, который работает, и алерт, который срабатывает раньше звонка пользователя. У каждого изменения есть цифра до и после.',
+    io: 'текущий пайплайн → воспроизводимый деплой, SLO и runbook',
+  },
+  {
+    title: 'Безопасность данных и ИИ',
+    text: 'Выгрузка клиентских данных в рабочей папке и ИИ-ассистент в IDE: утечка без злого умысла, просто по недоразумению. Нахожу пути, по которым данные могут уйти, и закрываю их правами, политиками и журналом. Агент получает ровно столько доступа, сколько нужно задаче.',
+    io: 'карта потоков данных и доступов → политики, права, секреты и журнал',
   },
 ];
 ---
 <section id="work" class="wrap section">
   <p class="eyebrow">Чем занимаюсь</p>
-  <h2 class="h2 heading">Три направления. Один подход: сначала измерить.</h2>
+  <h2 class="h2 heading">Четыре направления. Один подход: сначала измерить.</h2>
+  <p class="intro">Улучшение без метрики остаётся мнением. Поэтому у каждой работы есть владелец, цифра «до» и цифра «после».</p>
   <div class="work">
     {items.map((it) => (
       <article>
@@ -32,16 +38,16 @@ const items = [
 </section>
 
 <style>
-  .heading { max-width: 24ch; }
-  .work { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 36px; border-top: 1px solid var(--line); }
-  article { padding: 28px 28px 28px 0; min-width: 0; }
-  article + article { padding-left: 28px; border-left: 1px solid var(--line); }
+  .heading { max-width: 26ch; }
+  .intro { font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 62ch; margin: 16px 0 0; }
+  .work { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 36px; border-top: 1px solid var(--line); }
+  article { padding: 28px 32px 28px 0; min-width: 0; border-bottom: 1px solid var(--line-soft); }
+  article:nth-child(even) { padding: 28px 0 28px 32px; border-left: 1px solid var(--line); }
   h3 { font-size: 19px; font-weight: 600; margin: 0; }
   .text { font-size: 15px; line-height: 1.65; color: var(--muted); margin: 12px 0 18px; }
   .io { margin: 0; line-height: 1.7; }
   @media (max-width: 860px) {
     .work { grid-template-columns: minmax(0, 1fr); }
-    article, article + article { padding: 24px 0; border-left: 0; }
-    article + article { border-top: 1px solid var(--line); }
+    article, article:nth-child(even) { padding: 24px 0; border-left: 0; }
   }
 </style>
