@@ -64,6 +64,18 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     let returnFocus: HTMLElement | null = null;
     let greeted = false;
 
+    // Экранная клавиатура iOS не меняет layout viewport: поднимаем панель над ней
+    const vv = window.visualViewport;
+    if (vv) {
+      const fit = () => {
+        const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        sheet.style.bottom = `${kb}px`;
+        sheet.style.maxHeight = `${Math.round(vv.height * 0.9)}px`;
+      };
+      vv.addEventListener('resize', fit);
+      vv.addEventListener('scroll', fit);
+    }
+
     const kbd = launcher.querySelector<HTMLElement>('[data-console-kbd]');
     if (kbd && !/Mac|iPhone|iPad/.test(navigator.userAgent)) kbd.textContent = 'Ctrl K';
 
@@ -304,6 +316,10 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     bottom: 0;
     z-index: 11;
     height: min(480px, 75vh);
+    height: min(480px, 75dvh);
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -317,11 +333,12 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   @keyframes rise { from { transform: translateY(24px); opacity: 0.4; } to { transform: none; opacity: 1; } }
   @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 
-  .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .bar { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .dot { color: var(--teal); }
   .is-busy .dot { color: var(--amber); animation: blink 1s steps(2) infinite; }
   @keyframes blink { 50% { opacity: 0.3; } }
   .close {
+    flex: none;
     min-height: 36px;
     padding: 0 12px;
     border-radius: 8px;
@@ -333,6 +350,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
   .log {
     position: relative;
+    min-width: 0;
+    overscroll-behavior: contain;
     flex: 1;
     min-height: 0;
     overflow: auto;
@@ -348,7 +367,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .log :global(.ln.err) { color: var(--magenta); }
   .log :global(.ln.muted) { color: var(--muted); }
 
-  .line { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+  .line { flex: none; display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
   .ps { font-family: var(--mono); color: var(--teal); }
   input {
     flex: 1;
@@ -363,7 +382,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   }
   input::placeholder { color: var(--muted); }
 
-  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .chips { flex: none; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .chips::-webkit-scrollbar { display: none; }
   .chip {
     flex: none;
@@ -380,7 +399,9 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
   @media (max-width: 640px) {
     .wide { display: none; }
-    .log { font-size: 11px; }
+    .log { font-size: 11px; overflow-x: hidden; overflow-y: auto; }
+    /* 16px: иначе iOS Safari приближает страницу при фокусе на поле */
+    input { font-size: 16px; }
     .log :global(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; }
   }
 </style>

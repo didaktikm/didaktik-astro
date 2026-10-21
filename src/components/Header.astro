@@ -6,7 +6,8 @@ const home = isHome ? '' : '/';
 ---
 <header class="top wrap">
   <a class="logo" href="/" aria-label="didaktik, на главную">didaktik<span aria-hidden="true">_</span></a>
-  <nav class="nav" aria-label="Основная навигация">
+  <button type="button" class="menu-btn mono" id="menu-btn" aria-expanded="false" aria-controls="site-nav" hidden>Меню</button>
+  <nav class="nav" id="site-nav" aria-label="Основная навигация">
     <a href={`${home}#trace`}>Трасса</a>
     <a href={`${home}#work`}>Чем занимаюсь</a>
     <a href={`${home}#audit`}>Аудит</a>
@@ -14,6 +15,25 @@ const home = isHome ? '' : '/';
     <a href="/about/">Обо мне</a>
   </nav>
 </header>
+
+<script>
+  // Мобильное меню: без скрипта ссылки просто переносятся на вторую строку
+  const btn = document.querySelector<HTMLButtonElement>('#menu-btn');
+  const nav = document.querySelector<HTMLElement>('#site-nav');
+  if (btn && nav) {
+    btn.hidden = false;
+    nav.classList.add('js');
+    const set = (v: boolean) => {
+      nav.classList.toggle('open', v);
+      btn.setAttribute('aria-expanded', String(v));
+    };
+    btn.addEventListener('click', () => set(!nav.classList.contains('open')));
+    nav.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) set(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); }
+    });
+  }
+</script>
 
 <style>
   .top {
@@ -35,7 +55,37 @@ const home = isHome ? '' : '/';
   .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 28px; font-size: 14px; }
   .nav a { color: var(--muted); }
   .nav a:hover { color: var(--fg); }
+  .menu-btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--fg);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .menu-btn[hidden] { display: none; }
+  .menu-btn[aria-expanded="true"] { border-color: var(--teal); }
+  .menu-btn { display: none; }
   @media (max-width: 760px) {
-    .nav a:not([href$="about/"]):not([href="/notes/"]) { display: none; }
+    .menu-btn:not([hidden]) { display: inline-flex; align-items: center; }
+    .nav.js {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: max(var(--gutter), env(safe-area-inset-left, 0px));
+      right: max(var(--gutter), env(safe-area-inset-right, 0px));
+      flex-direction: column;
+      gap: 0;
+      padding: 6px 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 16px 40px oklch(0.1 0.01 230 / 0.6);
+    }
+    .nav.js.open { display: flex; }
+    .nav.js a { padding: 14px 0; font-size: 16px; color: var(--fg); border-bottom: 1px solid var(--line-soft); }
+    .nav.js a:last-child { border-bottom: 0; }
   }
 </style>
