@@ -9,7 +9,7 @@ const FORTUNES = [
   'Мониторинг молчит. Либо всё хорошо, либо мониторинг тоже упал.',
   'Документация актуальна ровно до первого коммита после неё.',
   'Любая достаточно сложная инфраструктура содержит скрипт, который все боятся удалить.',
-  'Нет ничего более постоянного, чем feature flag «на одну неделю».',
+  'Нет ничего постояннее feature-флага «на одну неделю».',
   'ИИ не заменит инженера. Инженера заменит инженер, который проверяет за ИИ.',
   'Самый надёжный распределённый консенсус: «давайте не будем деплоить».',
 ];
@@ -61,7 +61,7 @@ export const funCommands: Record<string, Command> = {
   hire: {
     group: 'fun',
     desc: 'как со мной связаться',
-    run: () => [out('hello@didaktik.dev', 'info'), out('Беру интересные задачи. Скучных у всех и так хватает.', 'muted')],
+    run: () => [out('didaktik@didaktik.dev', 'info'), out('Беру интересные задачи. Скучных у всех и так хватает.', 'muted')],
   },
 
   works: {
@@ -133,7 +133,7 @@ export const funCommands: Record<string, Command> = {
     run: (_a, ctx) => (/-9/.test(ctx.raw) ? [out('Killed. Без шансов на graceful shutdown.', 'err')] : [out('kill: попробуйте kill -9, но сначала подумайте', 'muted')]),
   },
 
-  vim: { group: 'fun', desc: '', hidden: true, run: () => [out('~'), out('~'), out('-- INSERT --', 'info'), out('Вы в vim. Выход: Esc, затем :q! (но это не точно).', 'muted')] },
+  vim: { group: 'fun', desc: '', hidden: true, run: () => [out('~'), out('~'), out('-- INSERT --', 'info'), out('Вы в vim. Выход: Esc, затем :q! (ручаться не буду).', 'muted')] },
   ':q': { group: 'fun', desc: '', hidden: true, run: () => [out('Вы не в vim. Но приятно, что вы готовы.', 'muted')] },
   ':q!': { group: 'fun', desc: '', hidden: true, run: () => [out('Вы не в vim. Но решительность ценим.', 'muted')] },
   ':wq': { group: 'fun', desc: '', hidden: true, run: () => [out('Сохранять нечего. Выходить некуда. Вы уже в проде.', 'muted')] },

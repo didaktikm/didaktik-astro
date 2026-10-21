@@ -13,11 +13,12 @@
 │   ├── content/notes/     # заметки в Markdown (draft: true скрывает заметку)
 │   ├── data/audit.ts      # данные блока «Пример аудита»
 │   ├── layouts/Base.astro # общий каркас страницы и SEO-теги
-│   ├── lib/build.ts       # коммит и дата сборки для футера
+│   ├── lib/
+│   │   ├── build.ts       # коммит и дата сборки для футера
+│   │   └── trace.ts       # измерение и модель трассы
 │   ├── pages/             # главная, заметки, «Обо мне», 404, rss.xml, sitemap.xml
 │   ├── scripts/
-│   │   ├── trace.ts               # измерение и модель трассы
-│   │   └── console/               # консоль: real.ts (настоящие), devops.ts, ai.ts, fun.ts, index.ts
+│   │   └── console/       # консоль: real.ts (настоящие), devops.ts, ai.ts, fun.ts, index.ts
 │   └── styles/            # токены, базовые стили, стили внутренних страниц
 ├── deploy/
 │   ├── Caddyfile                # раздача статики в контейнере, кэш, CSP, 404

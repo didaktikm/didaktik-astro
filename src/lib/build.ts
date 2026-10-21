@@ -5,4 +5,4 @@ export const buildSha = rawSha ? rawSha.slice(0, 7) : 'local';
 
 export const buildDate = new Date().toISOString().slice(0, 10);
 
-export const contactEmail = 'hello@didaktik.dev';
+export const contactEmail = 'didaktik@didaktik.dev';

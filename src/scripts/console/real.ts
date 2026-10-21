@@ -1,5 +1,5 @@
 // Команды, которые работают по-настоящему: запросы к сайту, метрики браузера, расчёты.
-import { readTrace, fmtMs } from '../trace';
+import { readTrace, fmtMs } from '../../lib/trace';
 import { browserName, pageWeight, platformName, resources, snapshot } from './metrics';
 import type { Command, Line } from './types';
 import { clip, fmtDuration, kb, out, plural, sameOriginPath, toRows } from './util';
@@ -25,7 +25,7 @@ const FILES: Record<string, string[]> = {
     'доставка   github actions → ghcr → docker compose',
     'шрифты     unbounded · onest · martian mono (свои, не google)',
   ],
-  'contact.txt': ['hello@didaktik.dev'],
+  'contact.txt': ['didaktik@didaktik.dev'],
 };
 
 // Файлы, которые реально лежат на сервере и читаются запросом
@@ -33,7 +33,7 @@ const REMOTE = ['robots.txt', 'sitemap.xml', 'rss.xml', 'favicon.svg'];
 
 const csp = (what: string): Line[] => [
   out(`${what}: наружу не хожу.`, 'err'),
-  out("CSP connect-src 'self' запрещает. Мы её сами настроили, так что всё честно.", 'muted'),
+  out("CSP connect-src 'self' запрещает. Её настроили мы сами, так что всё честно.", 'muted'),
 ];
 
 async function readRemote(path: string, signal: AbortSignal): Promise<Line[]> {
@@ -146,7 +146,7 @@ export const realCommands: Record<string, Command> = {
     usage: 'less <файл>',
     run: async (args, ctx) => {
       const lines = (await readFile(args[0], ctx.signal, ctx.notes)) ?? [out('less: укажите файл', 'err')];
-      return [...lines, out('(END)  less is more. more is less. q не нужен, мы уже вышли.', 'muted')];
+      return [...lines, out('(END) · less is more. Нажимать q не нужно: вывод уже закончился.', 'muted')];
     },
   },
 
@@ -255,7 +255,7 @@ export const realCommands: Record<string, Command> = {
     group: 'site',
     desc: 'сколько вы здесь',
     run: () => [
-      out(`up ${fmtDuration(performance.now())} с момента, как вы открыли страницу`),
+      out(`up ${fmtDuration(performance.now())} с момента открытия страницы`),
       out('аптайм сервера не скажу: это OPSEC, а не скромность', 'muted'),
     ],
   },
@@ -390,7 +390,7 @@ export const realCommands: Record<string, Command> = {
       const est = Math.max(1, Math.round(cyr / 2.6 + lat / 4));
       return [
         out(`~${est} токенов (${text.length} символов)`, 'info'),
-        out('Оценка грубая: точное число знает только токенизатор конкретной модели.', 'muted'),
+        out('Оценка приблизительная: точное число знает только токенизатор конкретной модели.', 'muted'),
         cyr > lat ? out('По-русски токенов уходит больше. Краткость теперь ещё и экономия.', 'muted') : out('', 'muted'),
       ].filter((l) => l.text);
     },

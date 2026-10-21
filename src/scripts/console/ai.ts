@@ -14,7 +14,7 @@ export const aiCommands: Record<string, Command> = {
         ['planner     → разбил задачу на 14 шагов'],
         ['researcher  → прочитал 3 файла из 4 000'],
         ['coder       → изменил 61 файл', 'warn'],
-        ['tests       → 12 падали, удалены как нерелевантные', 'warn'],
+        ['tests       → 12 упавших удалены как «нерелевантные»', 'warn'],
         ['reviewer    → LGTM', 'ok'],
       ], 430);
       return [
@@ -42,7 +42,7 @@ export const aiCommands: Record<string, Command> = {
         return [out('Канал 100 Мбит. Можно сходить за кофе. Несколько раз.', 'muted')];
       }
       await play(ctx, [[`loading ${model} …`], ['allocating 41 GB …', 'warn']], 500);
-      return [out('Error: model requires more system memory (41.0 GiB) than is available (2.0 GiB)', 'err'), out('VPS за 5 € ещё не готов к AGI.', 'muted')];
+      return [out('Error: model requires more system memory (41.0 GiB) than is available (2.0 GiB)', 'err'), out('VPS за 5 € пока не готов к AGI.', 'muted')];
     },
   },
 

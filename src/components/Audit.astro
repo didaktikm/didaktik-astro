@@ -6,8 +6,8 @@ const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: '
 ---
 <section id="audit" class="wrap section">
   <p class="eyebrow">Пример аудита</p>
-  <h2 class="h2 heading">Аудит этого сайта. Сапожник проверил свои сапоги и починил.</h2>
-  <p class="intro">Настоящие находки по репозиторию didaktik-astro и что с ними сделано. Каждая проверка: метод, было, стало.</p>
+  <h2 class="h2 heading">Аудит этого сайта. Сапожник без сапог, но с отчётом.</h2>
+  <p class="intro">Реальные находки по репозиторию didaktik-astro и то, что с ними сделали. У каждой проверки указаны метод, состояние «было» и «стало».</p>
 
   <div class="table" role="table" aria-label="Результаты аудита">
     <div class="row head" role="row">
@@ -25,7 +25,7 @@ const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: '
       </div>
     ))}
   </div>
-  <p class="mono summary">{dateLabel} · пройдено {passed} из {audit.length} · до исправлений: 1 из 5</p>
+  <p class="mono summary">{dateLabel} · пройдено {passed} из {audit.length} · до исправлений: 1 из {audit.length}</p>
 </section>
 
 <style>

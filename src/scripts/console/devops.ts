@@ -32,7 +32,7 @@ export const devopsCommands: Record<string, Command> = {
           out(row('9f8e7d6c5b4a', 'caddy:2-alpine', 'Up 41 days', 'proxy')),
           out(row('0c1d2e3f4a5b', 'agent:latest', 'Restarting (1) 3 sec ago', 'agent-reviewer'), 'warn'),
           out(row('7a6b5c4d3e2f', 'nginx:latest', 'Exited (0) 2 years ago', 'do-not-delete'), 'muted'),
-          out('Первая строка про этот сайт. Остальные тоже настоящие, просто не здесь.', 'muted'),
+          out('Первая строка — этот сайт. Остальные контейнеры тоже настоящие, просто живут не здесь.', 'muted'),
         ];
       }
       if (sub === 'logs') {
@@ -52,8 +52,8 @@ export const devopsCommands: Record<string, Command> = {
           ['Step 4/9 : RUN apt-get install -y everything', 'warn'],
           ['Step 7/9 : COPY . .   (вместе с node_modules и .git)', 'warn'],
         ], 420);
-        return many('out', 'Successfully built 3f2a1b9c. Размер образа: 4.7 GB. Для статического сайта.')
-          .concat(out('Образ этого сайта: Caddy на alpine и статика. .dockerignore существует.', 'muted'));
+        return many('out', 'Successfully built 3f2a1b9c. Размер образа: 4,7 ГБ. Для статического сайта.')
+          .concat(out('Образ этого сайта: Caddy на alpine и статика. А .dockerignore, представьте, есть.', 'muted'));
       }
       if (sub === 'images') {
         return [
@@ -74,7 +74,7 @@ export const devopsCommands: Record<string, Command> = {
         ];
       }
       if (sub === 'system' && a[1] === 'prune') {
-        return [out('Deleted 214 objects. Reclaimed 38GB.', 'ok'), out('И один volume, который был нужен.', 'err')];
+        return [out('Deleted 214 objects. Reclaimed 38GB.', 'ok'), out('И один volume, который, как выяснилось, был нужен.', 'err')];
       }
       return [out('docker: попробуйте ps, logs, build, images, compose или system prune', 'muted')];
     },
@@ -115,7 +115,7 @@ export const devopsCommands: Record<string, Command> = {
       }
       if (verb === 'logs') return [out('Error from server: container is waiting to start: CrashLoopBackOff', 'err'), out('Контейнер умер, не оставив записки.', 'muted')];
       if (verb === 'delete') return [out('Error from server (Forbidden): namespaces "production" is forbidden', 'err'), out('Спасибо, RBAC. Вы только что избежали строчки «удалил прод» в резюме.', 'muted')];
-      if (verb === 'scale') return [out('deployment.apps/api scaled to 0', 'ok'), out('Нулевой даунтайм успешно заменён нулевым аптаймом.', 'muted')];
+      if (verb === 'scale') return [out('deployment.apps/api scaled to 0', 'ok'), out('Нулевой даунтайм достигнут. Нулевой аптайм тоже.', 'muted')];
       if (verb === 'rollout') return [out('deployment.apps/api restarted', 'ok'), out('Хорошая новость: перезапустилось. Плохая: проблема тоже.', 'muted')];
       return [out('The connection to the server localhost:8080 was refused - did you specify the right host or port?', 'err')];
     },
@@ -138,7 +138,7 @@ export const devopsCommands: Record<string, Command> = {
     desc: 'plan, apply, destroy',
     usage: 'terraform <plan|apply|destroy>',
     run: async (a, ctx) => {
-      if (a[0] === 'plan') return [out('Plan: 1 to add, 0 to change, 47 to destroy.', 'warn'), out('47 to destroy? Это точно то, что мы хотели?', 'muted')];
+      if (a[0] === 'plan') return [out('Plan: 1 to add, 0 to change, 47 to destroy.', 'warn'), out('47 к удалению? Это точно то, чего мы хотели?', 'muted')];
       if (a[0] === 'apply') {
         await play(ctx, [
           ['aws_instance.prod: Modifying…'],
@@ -172,7 +172,7 @@ export const devopsCommands: Record<string, Command> = {
     run: async (_a, ctx) => {
       await play(ctx, [['build   ✓', 'ok'], ['test    ✓  (3 skipped, 12 flaky)', 'ok'], ['push    ✓', 'ok'], ['canary  …']], 380);
       if (isFriday()) return [out('production: ОТКАЗАНО. Сегодня пятница.', 'err'), out('Это не баг. Это политика выживания.', 'muted')];
-      return [out('production: выкачено.', 'ok'), out('Следите за дашбордом. Желательно не только вы.', 'muted')];
+      return [out('production: выкачено.', 'ok'), out('Следите за дашбордом. Желательно, чтобы смотрели не только вы.', 'muted')];
     },
   },
 

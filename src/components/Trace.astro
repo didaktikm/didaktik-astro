@@ -1,5 +1,5 @@
 ---
-import { SPAN_ORDER, SPAN_META } from '../scripts/trace';
+import { SPAN_ORDER, SPAN_META } from '../lib/trace';
 
 const hops = [
   { id: 'browser', name: 'ваш браузер' },
@@ -42,11 +42,11 @@ const first = SPAN_META.ttfb;
     ))}
   </div>
 
-  <noscript><p class="mono noscript">Трассе нужен JavaScript: тайминги берутся из вашего браузера.</p></noscript>
+  <noscript><p class="mono noscript">Для трассы нужен JavaScript: тайминги берутся из вашего браузера.</p></noscript>
 </figure>
 
 <script>
-  import { SPAN_META, fmtMs, whenTraceReady, type SpanKey, type Trace } from '../scripts/trace';
+  import { SPAN_META, fmtMs, whenTraceReady, type SpanKey, type Trace } from '../lib/trace';
 
   const root = document.querySelector<HTMLElement>('[data-trace]');
   if (root) {

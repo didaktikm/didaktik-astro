@@ -106,7 +106,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
       setExpanded(true);
       if (!greeted) {
         print([
-          { text: 'didaktik shell 0.4. Введите help или нажмите на подсказку ниже.', level: 'info' },
+          { text: 'didaktik shell 0.4. Введите help или выберите подсказку ниже.', level: 'info' },
           { text: 'Часть команд работает по-настоящему: curl, ping, top, ls /, slo.', level: 'muted' },
         ]);
         greeted = true;

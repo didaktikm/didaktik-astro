@@ -43,7 +43,7 @@ export function pageWeight(): number {
 
 export function snapshot() {
   const mem = (performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
-  const conn = (navigator as Navigator & { connection?: { effectiveType?: string; rtt?: number; downlink?: number } }).connection;
+  const conn = (navigator as Navigator & { connection?: { effectiveType?: string; rtt?: number } }).connection;
   const devMem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
   return {
     uptimeMs: performance.now(),
@@ -54,7 +54,6 @@ export function snapshot() {
     deviceMemory: devMem,
     net: conn?.effectiveType,
     rtt: conn?.rtt,
-    downlink: conn?.downlink,
     longTasks,
     longTaskMs,
   };
