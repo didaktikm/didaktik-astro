@@ -1,0 +1,62 @@
+---
+import { audit, auditDate } from '../data/audit';
+
+const passed = audit.filter((c) => c.score === 'pass').length;
+const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: 'long' });
+---
+<section id="audit" class="wrap section">
+  <p class="eyebrow">Пример аудита</p>
+  <h2 class="h2 heading">Аудит этого сайта. Сапожник проверил свои сапоги и починил.</h2>
+  <p class="intro">Настоящие находки по репозиторию didaktik-astro и что с ними сделано. Каждая проверка: метод, было, стало.</p>
+
+  <div class="table" role="table" aria-label="Результаты аудита">
+    <div class="row head" role="row">
+      <span class="mono" role="columnheader">проверка</span>
+      <span class="mono" role="columnheader">было</span>
+      <span class="mono" role="columnheader">стало</span>
+      <span class="mono" role="columnheader">оценка</span>
+    </div>
+    {audit.map((c) => (
+      <div class="row" role="row">
+        <span class="check" role="cell">{c.check}<span class="mono method">{c.method}</span></span>
+        <span class="mono before" role="cell">{c.before}</span>
+        <span class="mono after" role="cell">{c.after}</span>
+        <span role="cell"><span class:list={['mono', 'pill', c.score]}>{c.score}</span></span>
+      </div>
+    ))}
+  </div>
+  <p class="mono summary">{dateLabel} · пройдено {passed} из {audit.length} · до исправлений: 1 из 5</p>
+</section>
+
+<style>
+  .heading { max-width: 28ch; }
+  .intro { font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 62ch; margin: 16px 0 0; }
+  .table { margin-top: 32px; border-top: 1px solid var(--line); }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr) minmax(0, 1.4fr) 72px;
+    gap: 20px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .head { padding-block: 12px; }
+  .check { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500; }
+  .method { font-weight: 400; }
+  .before { line-height: 1.6; text-decoration: line-through; text-decoration-color: var(--line); }
+  .after { line-height: 1.6; color: var(--fg); }
+  .pill { display: inline-block; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); }
+  .pill.pass { color: var(--teal); border-color: var(--teal); }
+  .pill.warn { color: var(--fg); }
+  .pill.fail { color: var(--magenta); border-color: var(--magenta); }
+  .summary { margin: 18px 0 0; }
+  @media (max-width: 860px) {
+    .head { display: none; }
+    .row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
+    .before, .after { grid-column: 1 / -1; }
+    .before { text-decoration: none; }
+    .before::before { content: 'было: '; }
+    .after::before { content: 'стало: '; color: var(--muted); }
+    .row > span:last-child { grid-row: 1; grid-column: 2; }
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="404 · didaktik" description="Страница не найдена.">
+  <div class="wrap page">
+    <p class="eyebrow">Инцидент · SEV-4</p>
+    <h1 class="page-title">404. Такой страницы нет.</h1>
+    <dl class="pm">
+      <dt class="mono">impact</dt><dd>Вы и, возможно, ещё один человек.</dd>
+      <dt class="mono">root cause</dt><dd>Ссылка устарела, опечатка в адресе или страницу так и не написали.</dd>
+      <dt class="mono">mitigation</dt><dd><a href="/">Вернуться на главную</a> или открыть консоль и набрать <code>ls notes</code>.</dd>
+      <dt class="mono">action items</dt><dd>Ничего не делать. Это не DNS, мы проверили.</dd>
+    </dl>
+  </div>
+</Base>
+
+<style>
+  .pm {
+    display: grid;
+    grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
+    gap: 16px 24px;
+    margin: 48px 0 0;
+    max-width: 760px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  dt { padding-top: 4px; }
+  dd { margin: 0; font-size: 16px; line-height: 1.6; }
+  dd a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
+  code { font-family: var(--mono); font-size: 0.85em; padding: 2px 6px; border-radius: 4px; background: var(--panel); border: 1px solid var(--line-soft); }
+  @media (max-width: 640px) { .pm { grid-template-columns: minmax(0, 1fr); gap: 4px; } dd { margin-bottom: 14px; } }
+</style>

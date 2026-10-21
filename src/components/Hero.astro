@@ -1,10 +1,75 @@
 ---
-import Terminal from './Terminal.astro';
+import Trace from './Trace.astro';
 ---
-<section class="hero">
-<p class="tag">DevOps-архитектор · инфраструктура · ИИ-агенты</p>
-<h1>Инфраструктура для эпохи автономных агентов</h1>
-<p class="sub">Platform Engineering</p>
-<Terminal />
-<div class="chips" id="chips"></div>
+<section id="top" class="hero">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="eyebrow">Платформенная инженерия · аудит · архитектура</p>
+    <h1 class="title">Любую систему можно проследить. Начнём с этой страницы.</h1>
+    <div class="cols">
+      <div class="intro">
+        <p class="lead">Провожу аудит платформ и проектирую инфраструктуру. Смотрю на то, что система делает на самом деле, а не на то, что про неё написано в вики.</p>
+        <div class="actions">
+          <a href="#audit" class="btn btn-primary">Пример аудита</a>
+          <button type="button" class="btn" data-console-open aria-controls="console">
+            <span class="prompt" aria-hidden="true">&gt;_</span>Открыть консоль
+          </button>
+        </div>
+        <p class="mono hint">Справа трасса вашего запроса к этой странице. Наведите на шаг, чтобы увидеть, что происходило.</p>
+      </div>
+      <Trace />
+    </div>
+  </div>
 </section>
+
+<style>
+  .hero { position: relative; overflow: hidden; }
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%);
+  }
+  .glow {
+    position: absolute;
+    pointer-events: none;
+    width: 720px;
+    height: 720px;
+    left: -200px;
+    top: -320px;
+    background: radial-gradient(circle, oklch(0.82 0.12 185 / 0.1), transparent 62%);
+  }
+  .inner { position: relative; z-index: 1; padding-block: 56px 96px; }
+  .title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(30px, 4.4vw, 58px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 22px 0 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    gap: 56px;
+    align-items: start;
+    margin-top: 48px;
+  }
+  .intro { min-width: 0; display: flex; flex-direction: column; gap: 28px; }
+  .lead { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 44ch; margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .prompt { font-family: var(--mono); color: var(--teal); }
+  .hint { margin: 0; line-height: 1.7; }
+  @media (max-width: 900px) {
+    .cols { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .inner { padding-block: 32px 72px; }
+  }
+</style>

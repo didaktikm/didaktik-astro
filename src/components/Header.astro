@@ -1,11 +1,41 @@
 ---
 interface Props { hasNotes: boolean }
 const { hasNotes } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+const home = isHome ? '' : '/';
 ---
-<header class="top">
-<a class="logo" href="/">didaktik<span>_</span></a>
-<nav class="nav" aria-label="Основная навигация">
-{hasNotes && <a href="/notes/">Заметки</a>}
-<a href="/about/">Обо мне</a>
-</nav>
+<header class="top wrap">
+  <a class="logo" href="/" aria-label="didaktik, на главную">didaktik<span aria-hidden="true">_</span></a>
+  <nav class="nav" aria-label="Основная навигация">
+    <a href={`${home}#trace`}>Трасса</a>
+    <a href={`${home}#work`}>Чем занимаюсь</a>
+    <a href={`${home}#audit`}>Аудит</a>
+    {hasNotes && <a href="/notes/">Заметки</a>}
+    <a href="/about/">Обо мне</a>
+  </nav>
 </header>
+
+<style>
+  .top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding-block: 22px;
+  }
+  .logo {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+  }
+  .logo span { color: var(--teal); }
+  .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 28px; font-size: 14px; }
+  .nav a { color: var(--muted); }
+  .nav a:hover { color: var(--fg); }
+  @media (max-width: 760px) {
+    .nav a:not([href$="about/"]):not([href="/notes/"]) { display: none; }
+  }
+</style>

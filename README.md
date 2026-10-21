@@ -1,68 +1,77 @@
 # didaktik.dev
 
-Персональный сайт о платформенной инженерии и инфраструктуре для эпохи автономных агентов.
+Персональный сайт о платформенной инженерии, аудите и архитектуре.
 
-Сайт собран на Astro как статическая страница. На главной — анимированный фон с узлами сети и интерактивный терминал-симулятор. Для локальной разработки нужен Node.js 22; сайт можно собрать в Docker и раздавать через Caddy.
+Статический сайт на Astro. На главной трасса загрузки страницы по реальным таймингам посетителя (Navigation Timing API), пример аудита этого же сайта и консоль-шторка (`⌘K` / `Ctrl K` или `/`). Шрифты лежат в проекте, внешних запросов, трекеров и cookies нет.
 
 ## Структура проекта
 
 ```text
 .
 ├── src/
-│   ├── layouts/Base.astro  # разметка и содержимое страницы
-│   ├── pages/index.astro   # главная страница
-│   └── styles/global.css   # стили
-├── public/
-│   ├── site.js             # фон сети и терминал-симулятор
-│   ├── favicon.svg
-│   └── robots.txt
+│   ├── components/        # Header, Footer, Hero, Trace, Work, Audit, LatestNotes, Console
+│   ├── content/notes/     # заметки в Markdown (draft: true скрывает заметку)
+│   ├── data/audit.ts      # данные блока «Пример аудита»
+│   ├── layouts/Base.astro # общий каркас страницы и SEO-теги
+│   ├── lib/build.ts       # коммит и дата сборки для футера
+│   ├── pages/             # главная, заметки, «Обо мне», 404, rss.xml, sitemap.xml
+│   ├── scripts/
+│   │   ├── trace.ts               # измерение и модель трассы
+│   │   └── console/commands.ts    # команды консоли
+│   └── styles/            # токены, базовые стили, стили внутренних страниц
 ├── deploy/
-│   ├── Caddyfile                # раздача статических файлов в контейнере
-│   ├── compose.yaml             # подключение к внешней сети proxy
-│   └── proxy-snippet.Caddyfile  # конфигурация общего Caddy-прокси
+│   ├── Caddyfile                # раздача статики в контейнере, кэш, CSP, 404
+│   ├── compose.yaml             # запуск образа из GHCR в сети proxy
+│   └── proxy-snippet.Caddyfile  # блок для общего Caddy-прокси
 ├── Dockerfile
-└── .github/workflows/ci.yml     # сборка в GitHub Actions
+└── .github/workflows/ci.yml     # проверка, сборка, публикация образа
 ```
 
 ## Локальная разработка
 
-Установите зависимости и запустите сервер разработки:
+Нужен Node.js 22.
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run dev       # http://localhost:4321
+npm run check     # проверка типов
+npm run build     # статический сайт в dist/
+npm run preview   # просмотр собранной версии
 ```
 
-Сайт будет доступен по адресу <http://localhost:4321>.
-
-Собрать статический сайт и проверить собранную версию можно так:
-
-```bash
-npm run build      # результат сборки появится в dist/
-npm run preview    # локальный просмотр сборки
-```
-
-## Развёртывание
-
-Для запуска нужны Docker с Compose и общая Docker-сеть `proxy`. Создайте её, если её ещё не создал общий стек прокси:
-
-```bash
-docker network create proxy
-docker compose -f deploy/compose.yaml up -d --build
-```
-
-Compose-файл не публикует порты на хосте: приложение доступно в сети `proxy` под именем `didaktik` на порту `80`. Добавьте содержимое `deploy/proxy-snippet.Caddyfile` в конфигурацию общего Caddy-прокси и перезагрузите его. Этот блок направляет запросы к `didaktik.dev` и `www.didaktik.dev` в контейнер сайта.
+В режиме `dev` трасса показывает тайминги локального сервера, на проде — настоящие.
 
 ## Публикация образа
 
-При каждом успешном push в `main`, после прохождения CI, GitHub Actions собирает Docker-образ и публикует его в GitHub Container Registry (GHCR):
+GitHub Actions на каждый push в `main` и на теги `v*` проверяет типы, собирает сайт и публикует образ в GHCR:
 
 ```text
-ghcr.io/didaktikm/didaktik-astro:build-<run_id>-<run_attempt>
+ghcr.io/didaktikm/didaktik-astro:sha-<короткий коммит>
+ghcr.io/didaktikm/didaktik-astro:v1.2.3      # для git-тега v1.2.3
+ghcr.io/didaktikm/didaktik-astro:v1.2
 ```
 
-Тег основан на ID запуска workflow и номере попытки, а не на хеше коммита; повторные запуски также получают отдельные теги. Найти точный тег можно в логе шага `meta` или среди пакетов репозитория на GitHub. Для публикации используется встроенный `GITHUB_TOKEN`; отдельные секреты настраивать не нужно.
+Коммит сборки передаётся в образ через `PUBLIC_BUILD_SHA` и выводится в футере.
 
-## Содержимое сайта
+## Развёртывание
 
-Тексты главной страницы и контактный адрес `hello@didaktik.dev` находятся в `src/layouts/Base.astro`. Логика терминала-симулятора, его ответы и кнопки быстрого доступа — в `public/site.js`.
+Нужны Docker с Compose и общая сеть `proxy`:
+
+```bash
+docker network create proxy   # если её ещё нет
+DIDAKTIK_TAG=sha-1a2b3c4 docker compose -f deploy/compose.yaml up -d
+```
+
+На сервер попадает тот же образ, что прошёл CI. Откат: указать предыдущий тег и повторить команду. Контейнер работает с `read_only`, без лишних capabilities и с лимитами CPU и памяти. Порты наружу не публикуются: добавьте `deploy/proxy-snippet.Caddyfile` в общий Caddy-прокси.
+
+Собрать образ локально:
+
+```bash
+docker build --build-arg PUBLIC_BUILD_SHA=$(git rev-parse HEAD) -t didaktik-astro:local .
+```
+
+## Содержимое
+
+- Тексты главной: `src/components/Hero.astro`, `Work.astro`, `Audit.astro` (данные в `src/data/audit.ts`).
+- Заметки: `src/content/notes/*.md`.
+- Команды консоли: `src/scripts/console/commands.ts`.

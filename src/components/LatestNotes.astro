@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+
+const latest = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+{latest.length > 0 && (
+  <section id="notes" class="wrap section">
+    <p class="eyebrow">Заметки</p>
+    <ul class="list">
+      {latest.map((n) => (
+        <li class="item">
+          <time class="mono" datetime={n.data.date.toISOString()}>
+            {n.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}
+          </time>
+          <div>
+            <a class="title" href={`/notes/${n.id}/`}>{n.data.title}</a>
+            <p class="desc">{n.data.description}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <a class="mono all" href="/notes/">Все заметки →</a>
+  </section>
+)}
+
+<style>
+  .list { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .item time { padding-top: 5px; }
+  .title { font-size: 18px; font-weight: 500; }
+  .desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .all { display: inline-block; margin-top: 20px; }
+  @media (max-width: 640px) { .item { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+</style>

@@ -1,1 +1,37 @@
-<footer><span>Контакт: <a href="mailto:hello@didaktik.dev">hello@didaktik.dev</a></span><span>© 2026 didaktik</span></footer>
+---
+import { buildSha, buildDate, contactEmail } from '../lib/build';
+---
+<footer class="foot wrap">
+  <span class="mono email">{contactEmail}</span>
+  <span class="mono">
+    build {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · 0 трекеров · 0 cookies
+  </span>
+  <span class="mono">uptime: с последнего инцидента</span>
+</footer>
+
+<script>
+  // Реальный вес страницы по данным Resource Timing
+  const el = document.querySelector<HTMLElement>('[data-page-weight]');
+  const measure = () => {
+    if (!el || !('performance' in window)) return;
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    const res = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+    const bytes = (nav?.transferSize ?? 0) + res.reduce((sum, r) => sum + (r.transferSize || 0), 0);
+    el.textContent = bytes > 0 ? `${Math.round(bytes / 1024)} KB передано` : 'из кэша';
+  };
+  if (document.readyState === 'complete') measure();
+  else window.addEventListener('load', () => setTimeout(measure, 0), { once: true });
+</script>
+
+<style>
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 32px;
+    padding-block: 28px 112px;
+    border-top: 1px solid var(--line);
+  }
+  .email { color: var(--fg); user-select: all; }
+</style>

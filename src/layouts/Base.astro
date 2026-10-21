@@ -3,15 +3,15 @@ import '../styles/global.css';
 import '../styles/pages.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Console from '../components/Console.astro';
 import { getCollection } from 'astro:content';
 
 interface Props {
   title: string;
   description: string;
-  fx?: boolean;
   type?: 'website' | 'article';
 }
-const { title, description, fx = false, type = 'website' } = Astro.props;
+const { title, description, type = 'website' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const published = await getCollection('notes', ({ data }) => !data.draft);
 ---
@@ -19,8 +19,10 @@ const published = await getCollection('notes', ({ data }) => !data.draft);
 <html lang="ru">
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0c1418" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
@@ -36,13 +38,12 @@ const published = await getCollection('notes', ({ data }) => !data.draft);
 <meta name="twitter:description" content={description} />
 </head>
 <body>
-{fx && (<><canvas id="grid" aria-hidden="true"></canvas><div class="vig"></div></>)}
 <a class="skip" href="#main">К содержимому</a>
 <Header hasNotes={published.length > 0} />
 <main id="main">
 <slot />
 </main>
 <Footer />
-{fx && <script is:inline src="/site.js"></script>}
+<Console />
 </body>
 </html>

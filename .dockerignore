@@ -5,3 +5,5 @@ dist
 .github
 *.md
 deploy/compose.yaml
+.DS_Store
+.env

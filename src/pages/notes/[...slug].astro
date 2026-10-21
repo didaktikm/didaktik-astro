@@ -10,16 +10,30 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const date = entry.data.date;
+const words = (entry.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 180));
 ---
 <Base
   title={`${entry.data.title} · didaktik`}
   description={entry.data.description}
   type="article"
 >
-<article class="page prose">
-<p class="meta"><time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time></p>
-<h1>{entry.data.title}</h1>
-<Content />
-<p><a href="/notes/">← Все заметки</a></p>
-</article>
+  <article class="wrap page">
+    <p class="mono meta">
+      <time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
+      · {minutes} мин чтения
+      {entry.data.tags.length > 0 && <span> · {entry.data.tags.join(' · ')}</span>}
+    </p>
+    <h1 class="page-title">{entry.data.title}</h1>
+    <p class="lead">{entry.data.description}</p>
+    <div class="prose body">
+      <Content />
+    </div>
+    <a class="back" href="/notes/">← Все заметки</a>
+  </article>
 </Base>
+
+<style>
+  .meta { margin: 0; }
+  .body { margin-top: 48px; }
+</style>

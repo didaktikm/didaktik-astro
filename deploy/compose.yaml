@@ -1,11 +1,25 @@
+# Сайт берётся из GHCR: на сервер попадает тот же образ, что прошёл CI.
+# Тег задаётся переменной DIDAKTIK_TAG, например sha-1a2b3c4 или v1.2.0.
+# Откат: поменять тег и выполнить docker compose up -d.
 services:
   didaktik:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-    image: didaktik-site:latest
+    image: ghcr.io/didaktikm/didaktik-astro:${DIDAKTIK_TAG:?укажите тег образа, например sha-1a2b3c4}
     restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /config
+      - /data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
     networks: [proxy]
+
 networks:
   proxy:
     external: true

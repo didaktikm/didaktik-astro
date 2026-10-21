@@ -1,0 +1,252 @@
+---
+import { getCollection } from 'astro:content';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .map((n) => ({ id: n.id, title: n.data.title, date: n.data.date.toISOString().slice(0, 10) }));
+---
+<button type="button" class="launcher" data-console-open aria-controls="console" aria-expanded="false">
+  <span class="prompt" aria-hidden="true">&gt;_</span>
+  <span>консоль</span>
+  <kbd data-console-kbd>⌘K</kbd>
+</button>
+
+<section id="console" class="sheet" role="dialog" aria-label="Консоль" hidden data-console data-notes={JSON.stringify(notes)}>
+  <div class="bar">
+    <span class="mono"><span class="dot" aria-hidden="true">●</span> didaktik shell 0.3 · guest@didaktik.dev</span>
+    <button type="button" class="close mono" data-console-close aria-label="Закрыть консоль">esc · закрыть</button>
+  </div>
+  <div class="log" role="log" aria-live="polite" data-console-log></div>
+  <form class="line" data-console-form autocomplete="off">
+    <label for="console-input" class="visually-hidden">Команда</label>
+    <span class="ps" aria-hidden="true">$</span>
+    <input id="console-input" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="help" data-console-input />
+  </form>
+  <p class="mono hint">enter выполнить · tab дополнить · ↑↓ история · esc закрыть</p>
+</section>
+
+<script>
+  import { COMMANDS, COMMAND_NAMES, type Line, type Ctx } from '../scripts/console/commands';
+
+  const sheet = document.querySelector<HTMLElement>('[data-console]');
+  const launcher = document.querySelector<HTMLButtonElement>('.launcher');
+  if (sheet && launcher) {
+    const log = sheet.querySelector<HTMLElement>('[data-console-log]')!;
+    const form = sheet.querySelector<HTMLFormElement>('[data-console-form]')!;
+    const input = sheet.querySelector<HTMLInputElement>('[data-console-input]')!;
+    const openers = Array.from(document.querySelectorAll<HTMLElement>('[data-console-open]'));
+    const notes = JSON.parse(sheet.dataset.notes || '[]');
+    const history: string[] = [];
+    let cursor = 0;
+    let busy = false;
+    let returnFocus: HTMLElement | null = null;
+    let greeted = false;
+
+    const isMac = /Mac|iPhone|iPad/.test(navigator.userAgent);
+    const kbd = launcher.querySelector<HTMLElement>('[data-console-kbd]');
+    if (kbd && !isMac) kbd.textContent = 'Ctrl K';
+
+    const print = (lines: Line[]) => {
+      for (const l of lines) {
+        const div = document.createElement('div');
+        div.className = `ln ${l.level}`;
+        div.textContent = l.text;
+        log.appendChild(div);
+      }
+      while (log.childElementCount > 200) log.firstElementChild?.remove();
+      log.scrollTop = log.scrollHeight;
+    };
+
+    const setExpanded = (v: boolean) => openers.forEach((o) => o.setAttribute('aria-expanded', String(v)));
+
+    const open = () => {
+      if (!sheet.hidden) { input.focus(); return; }
+      returnFocus = document.activeElement as HTMLElement | null;
+      sheet.hidden = false;
+      document.body.classList.add('console-open');
+      setExpanded(true);
+      if (!greeted) {
+        print([{ text: 'didaktik shell 0.3. Введите help или trace.', level: 'info' }]);
+        greeted = true;
+      }
+      input.focus();
+    };
+
+    const close = () => {
+      if (sheet.hidden) return;
+      sheet.hidden = true;
+      document.body.classList.remove('console-open');
+      setExpanded(false);
+      (returnFocus && document.contains(returnFocus) ? returnFocus : launcher).focus();
+    };
+
+    const ctx: Ctx = { notes, history, close, clear: () => { log.textContent = ''; } };
+
+    const run = async (raw: string) => {
+      const text = raw.trim();
+      if (!text) return;
+      history.push(text);
+      cursor = history.length;
+      print([{ text: `$ ${text}`, level: 'muted' }]);
+      const [name, ...args] = text.split(/\s+/);
+      const key = name.toLowerCase();
+      const cmd = Object.prototype.hasOwnProperty.call(COMMANDS, key) ? COMMANDS[key] : null;
+      if (!cmd) {
+        print([{ text: `${name}: команда не найдена. Попробуйте help.`, level: 'err' }]);
+        return;
+      }
+      busy = true;
+      try {
+        print(await cmd(args, ctx));
+      } catch {
+        print([{ text: `${name}: что-то пошло не так. Это тоже инцидент.`, level: 'err' }]);
+      } finally {
+        busy = false;
+      }
+    };
+
+    openers.forEach((o) => o.addEventListener('click', open));
+    sheet.querySelector('[data-console-close]')!.addEventListener('click', close);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (busy) return;
+      const v = input.value;
+      input.value = '';
+      run(v);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        cursor = Math.max(0, cursor - 1);
+        input.value = history[cursor] ?? '';
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        cursor = Math.min(history.length, cursor + 1);
+        input.value = history[cursor] ?? '';
+      } else if (e.key === 'Tab') {
+        const v = input.value.trim().toLowerCase();
+        if (!v || v.includes(' ')) return;
+        e.preventDefault();
+        const m = COMMAND_NAMES.filter((c) => c.startsWith(v));
+        if (m.length === 1) input.value = `${m[0]} `;
+        else if (m.length > 1) print([{ text: m.join('   '), level: 'info' }]);
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        ctx.clear();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target as HTMLElement | null;
+      const typing = !!t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        sheet.hidden ? open() : close();
+      } else if (e.key === 'Escape' && !sheet.hidden) {
+        e.preventDefault();
+        close();
+      } else if (e.key === '/' && !typing && sheet.hidden) {
+        e.preventDefault();
+        open();
+      }
+    });
+  }
+</script>
+
+<style>
+  .launcher {
+    position: fixed;
+    right: max(20px, env(safe-area-inset-right, 0px));
+    bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--teal);
+    background: var(--panel);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--fg);
+    cursor: pointer;
+    box-shadow: 0 8px 32px oklch(0.1 0.01 230 / 0.6);
+  }
+  .launcher:hover { background: oklch(0.22 0.02 200); }
+  .prompt { color: var(--teal); }
+  kbd {
+    font-family: inherit;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+  :global(body.console-open) .launcher { visibility: hidden; }
+
+  .sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 11;
+    height: min(420px, 70vh);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px max(20px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
+    background: var(--panel);
+    border-top: 1px solid var(--teal);
+    box-shadow: 0 -24px 64px oklch(0.1 0.01 230 / 0.7);
+    animation: rise 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .sheet[hidden] { display: none; }
+  @keyframes rise { from { transform: translateY(24px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .dot { color: var(--teal); }
+  .close {
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+  }
+  .close:hover { border-color: var(--teal); color: var(--fg); }
+
+  .log {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .log :global(.ln) { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg); }
+  .log :global(.ln.info) { color: var(--teal); }
+  .log :global(.ln.warn) { color: var(--magenta); }
+  .log :global(.ln.err) { color: var(--magenta); }
+  .log :global(.ln.muted) { color: var(--muted); }
+
+  .line { display: flex; align-items: center; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+  .ps { font-family: var(--mono); color: var(--teal); }
+  input {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    border: 0;
+    outline: none;
+    background: none;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--fg);
+  }
+  input::placeholder { color: var(--muted); }
+  .hint { margin: 0; }
+  @media (max-width: 640px) { .hint { display: none; } }
+</style>

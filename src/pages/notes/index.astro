@@ -7,20 +7,46 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 ---
 <Base
   title="Заметки · didaktik"
-  description="Разборы из практики: инфраструктура, автоматизация, ИИ-агенты."
+  description="Разборы из практики: платформы, доставка, эксплуатация."
 >
-<div class="page">
-<h1>Заметки</h1>
-{notes.length === 0 ? <p>Пока нет опубликованных заметок.</p> : (
-  <ul class="note-list">
-    {notes.map((n) => (
-      <li>
-        <a href={`/notes/${n.id}/`}>{n.data.title}</a>
-        <time datetime={n.data.date.toISOString()}>{n.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
-        <p>{n.data.description}</p>
-      </li>
-    ))}
-  </ul>
-)}
-</div>
+  <div class="wrap page">
+    <p class="eyebrow">Заметки</p>
+    <h1 class="page-title">Разборы из практики</h1>
+    <p class="lead">Что работает, что нет и почему. С командами, конфигами и цифрами.</p>
+    {notes.length === 0 ? (
+      <p class="mono empty">Пока пусто. Первые заметки в работе.</p>
+    ) : (
+      <ul class="list">
+        {notes.map((n) => (
+          <li class="item">
+            <time class="mono" datetime={n.data.date.toISOString()}>
+              {n.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}
+            </time>
+            <div>
+              <a class="title" href={`/notes/${n.id}/`}>{n.data.title}</a>
+              <p class="desc">{n.data.description}</p>
+              {n.data.tags.length > 0 && <p class="mono tags">{n.data.tags.join(' · ')}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 </Base>
+
+<style>
+  .empty { margin-top: 40px; }
+  .list { list-style: none; margin: 48px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .item time { padding-top: 5px; }
+  .title { font-size: 19px; font-weight: 500; }
+  .desc { margin: 8px 0 0; color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 62ch; }
+  .tags { margin: 10px 0 0; }
+  @media (max-width: 640px) { .item { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+</style>
