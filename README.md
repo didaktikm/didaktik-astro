@@ -44,11 +44,12 @@ npm run preview   # просмотр собранной версии
 
 ## Публикация образа
 
-GitHub Actions на каждый push в `main` и на теги `v*` проверяет типы, собирает сайт и публикует образ в GHCR:
+GitHub Actions на push в `main`, `dev`, `redesign` и на теги `v*` проверяет типы, собирает сайт (стадия `check`) и публикует образ в GHCR (стадия `image`):
 
 ```text
-ghcr.io/didaktikm/didaktik-astro:sha-<короткий коммит>
-ghcr.io/didaktikm/didaktik-astro:v1.2.3      # для git-тега v1.2.3
+ghcr.io/didaktikm/didaktik-astro:dev-<короткий коммит>   # любая ветка, например dev-5d6282a
+ghcr.io/didaktikm/didaktik-astro:dev                    # ветка dev
+ghcr.io/didaktikm/didaktik-astro:v1.2.3                 # для git-тега v1.2.3
 ghcr.io/didaktikm/didaktik-astro:v1.2
 ```
 
@@ -60,7 +61,7 @@ ghcr.io/didaktikm/didaktik-astro:v1.2
 
 ```bash
 docker network create proxy   # если её ещё нет
-DIDAKTIK_TAG=sha-1a2b3c4 docker compose -f deploy/compose.yaml up -d
+DIDAKTIK_TAG=dev-1a2b3c4 docker compose -f deploy/compose.yaml up -d
 ```
 
 На сервер попадает тот же образ, что прошёл CI. Откат: указать предыдущий тег и повторить команду. Контейнер работает с `read_only`, без лишних capabilities и с лимитами CPU и памяти. Порты наружу не публикуются: добавьте `deploy/proxy-snippet.Caddyfile` в общий Caddy-прокси.

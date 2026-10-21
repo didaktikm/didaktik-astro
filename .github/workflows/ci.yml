@@ -1,15 +1,21 @@
 name: ci
+
 on:
   push:
-    branches: [main]
+    branches: [main, dev, redesign]
     tags: ['v*']
   pull_request:
 
 permissions:
   contents: read
 
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
 jobs:
-  build:
+  # Стадия 1: проверка типов и сборка сайта. Падает здесь — образ не собирается.
+  check:
+    name: check · типы и сборка
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +27,12 @@ jobs:
       - run: npm run check
       - run: npm run build
 
-  publish:
+  # Стадия 2: образ Caddy со статикой, публикуется в GHCR.
+  # Теги: dev-<короткий коммит> на каждую ветку, dev — на ветке dev, vX.Y.Z и vX.Y — на релизных тегах.
+  image:
+    name: image · ${{ github.ref_name }}
     if: github.event_name == 'push'
-    needs: build
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,9 +48,10 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ env.IMAGE }}
           tags: |
-            type=sha,format=short,prefix=sha-
+            type=sha,format=short,prefix=dev-
+            type=raw,value=dev,enable=${{ github.ref_name == 'dev' }}
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
       - uses: docker/build-push-action@v6
