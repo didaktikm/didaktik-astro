@@ -8,11 +8,12 @@ const home = isHome ? '' : '/';
   <a class="logo" href="/" aria-label="didaktik, на главную">didaktik<span aria-hidden="true">_</span></a>
   <button type="button" class="menu-btn mono" id="menu-btn" aria-expanded="false" aria-controls="site-nav" hidden>Меню</button>
   <nav class="nav" id="site-nav" aria-label="Основная навигация">
-    <a href={`${home}#trace`}>Трасса</a>
-    <a href={`${home}#work`}>Чем занимаюсь</a>
+    <a href={`${home}#work`}>Услуги</a>
+    <a href={`${home}#teach`}>Обучение</a>
     <a href={`${home}#audit`}>Аудит</a>
     {hasNotes && <a href="/notes/">Заметки</a>}
     <a href="/about/">Обо мне</a>
+    <a class="cta" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать</a>
   </nav>
 </header>
 
@@ -55,6 +56,7 @@ const home = isHome ? '' : '/';
   .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 28px; font-size: 14px; }
   .nav a { color: var(--muted); }
   .nav a:hover { color: var(--fg); }
+  .nav a.cta { color: var(--teal); }
   .menu-btn {
     min-height: 40px;
     padding: 0 14px;

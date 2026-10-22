@@ -1,0 +1,40 @@
+---
+const courses = [
+  {
+    title: 'Воркшоп для команды',
+    text: 'CI/CD без магии: воспроизводимая сборка, откат, секреты. Работаем на вашем репозитории, в конце отчёт с находками.',
+  },
+  {
+    title: 'ИИ-ассистенты без утечек',
+    text: 'Как пустить Claude Code или Copilot в репозиторий и не слить клиентские данные: права, политики, журнал действий агента.',
+  },
+  {
+    title: 'Менторство',
+    text: 'Один на один для DevOps-инженеров и тимлидов: разбор ваших задач, а не курс по учебнику.',
+  },
+];
+---
+<section id="teach" class="wrap section">
+  <p class="eyebrow">Обучение</p>
+  <h2 class="h2 heading">Учу команды тому, что делаю в проде.</h2>
+  <div class="items">
+    {courses.map((c) => (
+      <article>
+        <h3>{c.title}</h3>
+        <p class="text">{c.text}</p>
+      </article>
+    ))}
+  </div>
+  <p class="mono note">Формат и сроки обсуждаем.</p>
+</section>
+
+<style>
+  .heading { max-width: 26ch; }
+  .items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 36px; border-top: 1px solid var(--line); padding-top: 28px; }
+  h3 { font-size: 17px; font-weight: 600; margin: 0; }
+  .text { font-size: 15px; line-height: 1.65; color: var(--muted); margin: 12px 0 0; }
+  .note { margin: 28px 0 0; }
+  @media (max-width: 860px) {
+    .items { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  }
+</style>

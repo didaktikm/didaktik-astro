@@ -1,31 +1,32 @@
 ---
 import { audit, auditDate } from '../data/audit';
 
-const passed = audit.filter((c) => c.score === 'pass').length;
+const fixed = audit.filter((c) => c.label === 'исправлено').length;
+const okAsIs = audit.filter((c) => c.label === 'в норме').length;
 const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: 'long' });
 ---
 <section id="audit" class="wrap section">
   <p class="eyebrow">Пример аудита</p>
-  <h2 class="h2 heading">Аудит этого сайта. Сапожник без сапог, но с отчётом.</h2>
-  <p class="intro">Реальные находки по репозиторию didaktik-astro и то, что с ними сделали. У каждой проверки указаны метод, состояние «было» и «стало».</p>
+  <h2 class="h2 heading">Начал с себя: аудит этого сайта</h2>
+  <p class="intro">Реальные находки по репозиторию didaktik-astro и то, что с ними сделали. У каждой проверки указаны метод, состояние «было» и «стало». Пришлите ссылку на свой сайт, разберу так же.</p>
 
   <div class="table" role="table" aria-label="Результаты аудита">
     <div class="row head" role="row">
       <span class="mono" role="columnheader">проверка</span>
       <span class="mono" role="columnheader">было</span>
       <span class="mono" role="columnheader">стало</span>
-      <span class="mono" role="columnheader">оценка</span>
+      <span class="mono" role="columnheader">статус</span>
     </div>
     {audit.map((c) => (
       <div class="row" role="row">
         <span class="check" role="cell">{c.check}<span class="mono method">{c.method}</span></span>
         <span class="mono before" role="cell">{c.before}</span>
         <span class="mono after" role="cell">{c.after}</span>
-        <span role="cell"><span class:list={['mono', 'pill', c.score]}>{c.score}</span></span>
+        <span role="cell"><span class:list={['mono', 'pill', c.score]}>{c.label}</span></span>
       </div>
     ))}
   </div>
-  <p class="mono summary">{dateLabel} · пройдено {passed} из {audit.length} · до исправлений: 1 из {audit.length}</p>
+  <p class="mono summary">{dateLabel} · исправлено {fixed} · в норме {okAsIs}</p>
 </section>
 
 <style>
@@ -43,7 +44,7 @@ const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: '
   .head { padding-block: 12px; }
   .check { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500; }
   .method { font-weight: 400; }
-  .before { line-height: 1.6; text-decoration: line-through; text-decoration-color: var(--line); }
+  .before { line-height: 1.6; color: var(--muted); }
   .after { line-height: 1.6; color: var(--fg); }
   .pill { display: inline-block; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); }
   .pill.pass { color: var(--teal); border-color: var(--teal); }
@@ -54,7 +55,6 @@ const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: '
     .head { display: none; }
     .row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
     .before, .after { grid-column: 1 / -1; }
-    .before { text-decoration: none; }
     .before::before { content: 'было: '; }
     .after::before { content: 'стало: '; color: var(--muted); }
     .row > span:last-child { grid-row: 1; grid-column: 2; }

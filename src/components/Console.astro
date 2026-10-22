@@ -399,6 +399,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
 
   @media (max-width: 640px) {
     .wide { display: none; }
+    .launcher kbd { display: none; }
+    .launcher { min-height: 40px; padding: 0 14px; font-size: 11px; }
     .log { font-size: 11px; overflow-x: hidden; overflow-y: auto; }
     /* 16px: иначе iOS Safari приближает страницу при фокусе на поле */
     input { font-size: 16px; }

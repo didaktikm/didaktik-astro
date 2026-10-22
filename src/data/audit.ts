@@ -7,6 +7,7 @@ export interface AuditCheck {
   before: string;
   after: string;
   score: Score;
+  label: string;
 }
 
 export const auditDate = '2026-10-21';
@@ -18,6 +19,7 @@ export const audit: AuditCheck[] = [
     before: 'npm install в Dockerfile и CI, lockfile не обязателен',
     after: 'npm ci по lockfile, кэш npm в CI и в Docker',
     score: 'pass',
+    label: 'исправлено',
   },
   {
     check: 'Что задеплоено',
@@ -25,6 +27,7 @@ export const audit: AuditCheck[] = [
     before: 'compose собирал образ на сервере, мимо GHCR',
     after: 'compose тянет из GHCR тот же образ, что прошёл CI',
     score: 'pass',
+    label: 'исправлено',
   },
   {
     check: 'Версии и откат',
@@ -32,6 +35,7 @@ export const audit: AuditCheck[] = [
     before: 'тег build-<run_id> не указывает на коммит',
     after: 'теги sha-<коммит> и vX.Y.Z, откат сменой тега',
     score: 'pass',
+    label: 'исправлено',
   },
   {
     check: 'Кэширование статики',
@@ -39,6 +43,7 @@ export const audit: AuditCheck[] = [
     before: 'нет Cache-Control для хешированных файлов',
     after: '/_astro/* immutable на год, HTML всегда проверяется',
     score: 'pass',
+    label: 'исправлено',
   },
   {
     check: 'Здоровье контейнера',
@@ -46,6 +51,7 @@ export const audit: AuditCheck[] = [
     before: 'нет healthcheck, нет страницы 404',
     after: 'HEALTHCHECK в образе, 404 оформлена как инцидент',
     score: 'pass',
+    label: 'исправлено',
   },
   {
     check: 'Секреты и права CI',
@@ -53,5 +59,6 @@ export const audit: AuditCheck[] = [
     before: 'packages:write только в задаче publish',
     after: 'без изменений, замечаний нет',
     score: 'pass',
+    label: 'в норме',
   },
 ];

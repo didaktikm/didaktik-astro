@@ -5,18 +5,19 @@ import Trace from './Trace.astro';
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="glow" aria-hidden="true"></div>
   <div class="wrap inner">
-    <p class="eyebrow">Платформенная инженерия · аудит · архитектура</p>
-    <h1 class="title">Любую систему можно проследить. Начнём с этой страницы.</h1>
+    <p class="eyebrow">Аудит · архитектура · DevOps · безопасность ИИ-агентов</p>
+    <h1 class="title">Мнение — не метрика. Начнём с этой страницы.</h1>
     <div class="cols">
       <div class="intro">
-        <p class="lead">Провожу аудит платформ и проектирую инфраструктуру. Смотрю на то, что система делает на самом деле, а не на то, что о ней написано в вики.</p>
+        <p class="lead">Провожу аудит платформ и проектирую инфраструктуру для команд, у которых уже есть прод. Смотрю на то, что система делает на самом деле, а не на то, что написано в вики, и считаю цену каждого расхождения.</p>
         <div class="actions">
-          <a href="#audit" class="btn btn-primary">Пример аудита</a>
+          <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Обсудить задачу</a>
+          <a href="#audit" class="btn">Пример аудита</a>
           <button type="button" class="btn" data-console-open aria-controls="console">
             <span class="prompt" aria-hidden="true">&gt;_</span>Открыть консоль
           </button>
         </div>
-        <p class="mono hint">Трасса — ваш запрос к этой странице. Наведите курсор на шаг или коснитесь его, чтобы увидеть подробности.</p>
+        <p class="mono hint">Это трассировка вашего запроса по живым таймингам браузера. Коснитесь шага, чтобы увидеть подробности. Чужие системы разбираю так же, только глубже.</p>
       </div>
       <Trace />
     </div>

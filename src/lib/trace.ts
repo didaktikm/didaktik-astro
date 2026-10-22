@@ -1,4 +1,4 @@
-// Трасса загрузки страницы по Navigation Timing API: реальные тайминги посетителя.
+// Трассировка загрузки страницы по Navigation Timing API: реальные тайминги посетителя.
 
 export type SpanKey = 'dns' | 'tcp' | 'tls' | 'ttfb' | 'download' | 'render';
 

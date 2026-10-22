@@ -2,7 +2,7 @@
 import { buildSha, buildDate, contactEmail } from '../lib/build';
 ---
 <footer class="foot wrap">
-  <span class="mono email">{contactEmail}</span>
+  <a class="mono email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
   <span class="mono">
     build {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · 0 трекеров · 0 cookies
   </span>
@@ -33,5 +33,6 @@ import { buildSha, buildDate, contactEmail } from '../lib/build';
     padding-block: 28px 112px;
     border-top: 1px solid var(--line);
   }
-  .email { color: var(--fg); user-select: all; }
+  .email { color: var(--fg); text-decoration: none; }
+  .email:hover { color: var(--teal); }
 </style>

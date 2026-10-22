@@ -67,7 +67,7 @@ async function readFile(name: string | undefined, signal: AbortSignal, notes: { 
 export const realCommands: Record<string, Command> = {
   trace: {
     group: 'site',
-    desc: 'трасса вашего запроса к этой странице',
+    desc: 'трассировка вашего запроса к этой странице',
     run: () => {
       const t = readTrace();
       const lines = t.spans.map((s) =>
