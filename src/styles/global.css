@@ -15,8 +15,8 @@
   --bg: #1c1c1c;
   --surface: #262626;
   --surface-2: #303030;
-  --ink: #d6d5cf;
-  --muted: #a3a49f;
+  --ink: #ecebe6;
+  --muted: #b3b4af;
   --accent: #8fa68e;
   --accent-hover: #a3b8a2;
   --accent-ink: #1c1c1c;
@@ -81,7 +81,7 @@
   --step-display: clamp(3rem, 1rem + 8vw, 8.25rem);           /* 48–132px */
 
   --margin: clamp(1.25rem, 2.2vw, 2rem);
-  --gap-section: clamp(5rem, 3rem + 8vw, 11rem);
+  --gap-section: clamp(4.5rem, 2.5rem + 5vw, 8rem);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -113,7 +113,7 @@ body {
   transition: background-color var(--t-ui) ease, color var(--t-ui) ease;
 }
 
-h1, h2, h3 { margin: 0; font-weight: 300; text-wrap: balance; hyphens: none; }
+h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; hyphens: none; }
 p { margin: 0; text-wrap: pretty; }
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; color: inherit; }
@@ -125,7 +125,7 @@ button, input { font: inherit; color: inherit; }
 /* Заголовок раздела: один размер на весь сайт */
 .head {
   font-size: var(--step-head);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.02;
   letter-spacing: -0.03em;
 }

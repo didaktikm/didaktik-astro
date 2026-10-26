@@ -5,25 +5,25 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 5);
 
-type Row = { what: string; how: string; where: string; out: string; href?: string };
-const parts: { id: string; title: string; rows: Row[] }[] = [
+type Item = { name: string; detail: string; href?: string };
+const parts: { id: string; title: string; items: Item[] }[] = [
   {
     id: 'process',
     title: 'Как работаю',
-    rows: [
-      { what: 'Знакомство', how: 'переписка или созвон', where: 'Telegram, почта', out: 'ответ, могу ли помочь' },
-      { what: 'Аудит', how: 'доступ на чтение', where: 'код, CI/CD, мониторинг, облако', out: 'находки с доказательствами' },
-      { what: 'Отчёт и план', how: 'разбор с командой', where: 'созвон', out: 'исправления по цене' },
-      { what: 'Исправления', how: 'вместе или командой', where: 'ваша инфраструктура', out: 'по плану из отчёта' },
+    items: [
+      { name: 'Знакомство', detail: 'Переписка или созвон, Telegram или почта. Отвечаю, могу ли помочь.' },
+      { name: 'Аудит', detail: 'Доступ на чтение к коду, CI/CD, мониторингу и облаку. Результат: находки с доказательствами.' },
+      { name: 'Отчёт и план', detail: 'Разбор с вашей командой на созвоне. Исправления оцениваются по цене.' },
+      { name: 'Исправления', detail: 'Вместе или силами вашей команды, в вашей инфраструктуре, по плану из отчёта.' },
     ],
   },
   {
     id: 'teach',
     title: 'Обучение',
-    rows: [
-      { what: 'Воркшоп по CI/CD', how: 'для команды', where: 'ваш репозиторий', out: 'отчёт с находками' },
-      { what: 'ИИ-ассистенты без утечек', how: 'для команды', where: 'ваш репозиторий', out: 'права, политики, журнал' },
-      { what: 'Менторство', how: 'один на один', where: 'онлайн', out: 'разбор ваших задач' },
+    items: [
+      { name: 'Воркшоп по CI/CD', detail: 'Для команды, на вашем репозитории. Результат: отчёт с находками.' },
+      { name: 'ИИ-ассистенты без утечек', detail: 'Для команды, на вашем репозитории. Результат: права, политики, журнал действий.' },
+      { name: 'Менторство', detail: 'Один на один, онлайн. Разбираем ваши задачи.' },
     ],
   },
 ];
@@ -31,11 +31,9 @@ if (notes.length) {
   parts.push({
     id: 'notes',
     title: 'Заметки',
-    rows: notes.map((n) => ({
-      what: n.data.title,
-      how: n.data.tags.join(', '),
-      where: '',
-      out: n.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+    items: notes.map((n) => ({
+      name: n.data.title,
+      detail: `${n.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}. ${n.data.tags.join(', ')}`,
       href: `/notes/${n.id}/`,
     })),
   });
@@ -44,23 +42,15 @@ if (notes.length) {
 <section id="programme" class="prog wrap" data-reveal>
   {parts.map((p, pi) => (
     <div class="part" id={p.id} data-rv={pi}>
-      <h2 class="part-h">{p.title}</h2>
-      <table class="table">
-        <caption class="visually-hidden">{p.title}</caption>
-        <thead class="visually-hidden">
-          <tr><th scope="col">Что</th><th scope="col">Как</th><th scope="col">Где</th><th scope="col">Итог</th></tr>
-        </thead>
-        <tbody>
-          {p.rows.map((r) => (
-            <tr>
-              <th scope="row">{r.href ? <a class="link" href={r.href}>{r.what}</a> : r.what}</th>
-              <td class="soft">{r.how}</td>
-              <td class="soft">{r.where}</td>
-              <td class="end">{r.out}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 class="head">{p.title}</h2>
+      <ul class="items">
+        {p.items.map((it) => (
+          <li>
+            <p class="name">{it.href ? <a class="link" href={it.href}>{it.name}</a> : it.name}</p>
+            <p class="detail">{it.detail}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   ))}
   <p class="note" data-rv="3">Формат и сроки обсуждаем под задачу. Учу тому, что сам применяю в&nbsp;продакшене.</p>
@@ -68,35 +58,15 @@ if (notes.length) {
 
 <style>
   .prog { padding-top: var(--gap-section); }
-  .part + .part { margin-top: 72px; }
-  .part-h, .table { font-size: var(--step-lead); line-height: 1.5; }
-  .part-h { font-weight: 400; color: var(--accent); margin-bottom: 20px; letter-spacing: 0; }
-  .table { width: 100%; border-collapse: collapse; table-layout: fixed; font-weight: 400; }
-  .table th, .table td { padding: 0 24px 0 0; text-align: left; font-weight: 400; vertical-align: baseline; }
-  .table tr > :nth-child(1) { width: 33%; }
-  .table tr > :nth-child(2) { width: 22%; }
-  .table tr > :nth-child(3) { width: 27%; }
-  .table td.end { padding-right: 0; text-align: right; width: 18%; }
-  .table tbody tr { transition: color var(--t-hover) ease; }
-  .table tr + tr > * { padding-top: 0.25em; }
-  .soft { color: var(--muted); }
-  .note { margin-top: 56px; font-size: var(--step-body); color: var(--muted); max-width: 52ch; }
-
-  @media (max-width: 1099px) {
-    .table td.end { width: 24%; }
-    .table tr > :nth-child(3) { width: 21%; }
-  }
+  .part { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--margin) calc(var(--margin) * 2); align-items: start; }
+  .part + .part { margin-top: var(--gap-section); }
+  .items { margin: 0; padding: 0; list-style: none; display: grid; gap: 28px; }
+  .name { font-size: var(--step-lead); line-height: 1.3; font-weight: 500; }
+  .detail { margin-top: 4px; max-width: 60ch; color: var(--muted); }
+  .note { margin-top: 56px; color: var(--muted); max-width: 52ch; }
 
   @media (max-width: 899px) {
-    .table, .table tbody, .table tr { display: block; }
-    .table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 0; }
-    .table tr + tr { margin-top: 18px; }
-    .table tr + tr > * { padding-top: 0; }
-    .table th, .table td { display: block; width: auto !important; padding: 0; }
-    .table th { grid-column: 1 / -1; font-size: 22px; line-height: 1.3; }
-    .table td { font-size: 16px; line-height: 1.4; }
-    .table td.soft:nth-child(3) { display: none; }
-    .table td.end { text-align: right; color: var(--muted); }
-    .part-h { font-size: 22px; }
+    .part { grid-template-columns: minmax(0, 1fr); }
+    .items { gap: 22px; }
   }
 </style>
