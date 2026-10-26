@@ -18,22 +18,23 @@ const minutes = Math.max(1, Math.round(words / 180));
   description={entry.data.description}
   type="article"
 >
-  <article class="wrap page">
-    <p class="mono meta">
-      <time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
-      · {minutes} мин чтения
-      {entry.data.tags.length > 0 && <span> · {entry.data.tags.join(' · ')}</span>}
-    </p>
+  <article class="wrap page doc">
+    <div class="margin">
+      <p><b><time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time></b>{minutes} мин чтения</p>
+      {entry.data.tags.length > 0 && <p>{entry.data.tags.join(' · ')}</p>}
+      <p><a href="/notes/">← все заметки</a></p>
+    </div>
+    <div class="main">
     <h1 class="page-title">{entry.data.title}</h1>
     <p class="lead">{entry.data.description}</p>
     <div class="prose body">
       <Content />
     </div>
     <a class="back" href="/notes/">← Все заметки</a>
+    </div>
   </article>
 </Base>
 
 <style>
-  .meta { margin: 0; }
   .body { margin-top: 48px; }
 </style>

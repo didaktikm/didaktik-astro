@@ -6,13 +6,14 @@ import { contactEmail } from '../lib/build';
   title="Обо мне · didaktik"
   description="Больше двадцати лет в инфраструктуре, сейчас руковожу DevOps-командой. Коротко о том, кто я."
 >
-  <div class="wrap page">
-    <p class="eyebrow">Обо мне</p>
-    <h1 class="page-title">Павел. Инженер, который проверяет, а не спорит</h1>
+  <div class="wrap page doc">
+    <p class="margin"><b>Обо мне</b></p>
+    <div class="main">
+    <h1 class="page-title">Павел. Двадцать с лишним лет в инфраструктуре</h1>
     <div class="prose body">
-      <p>Больше двадцати лет в инфраструктуре. Начинал с 1С 7.7 и IT-отдела на десяток филиалов, потом были сеть на 256 портов, виртуалки, Kubernetes, озеро данных для банка и очень много ночных алертов. Про 1С вспоминаю с теплотой, про алерты помню всё.</p>
+      <p>Начинал с 1С 7.7 и IT-отдела на десяток филиалов, потом были сеть на 256 портов, виртуалки, Kubernetes, озеро данных для банка и очень много ночных алертов. Про 1С вспоминаю с теплотой, про алерты помню всё.</p>
       <p>Сейчас руковожу DevOps-командой: собираю пайплайны, чиню то, что «как-то работает», и учу ИИ-агентов не удалять тесты, когда те падают.</p>
-      <p>Здесь буду писать о том, что видел сам: что работает, что нет и почему. Без пересказа документации.</p>
+      <p>Здесь буду писать о том, что видел сам: что сработало, что сломалось и почему.</p>
       <p>Вне работы Ducati Multistrada и штанга. КМС по пауэрлифтингу, так что поднять упавший прод при случае могу и руками.</p>
       <p class="mono contact">
         <span>{contactEmail}</span>
@@ -20,12 +21,13 @@ import { contactEmail } from '../lib/build';
         <a href="https://t.me/didaktik" rel="noopener">Написать в Telegram</a>
       </p>
     </div>
+    </div>
   </div>
 </Base>
 
 <style>
   .body { margin-top: 40px; }
-  .contact { font-size: 13px; color: var(--fg); margin-top: 32px; }
+  .contact { font-size: 14px; line-height: 20px; color: var(--fg); margin-top: 32px; }
   .contact span:first-child { user-select: all; }
   .contact a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
 </style>

@@ -1,6 +1,9 @@
-/* Шрифты: самохостинг, только кириллица и латиница */
-@import '@fontsource/unbounded/cyrillic-500.css';
-@import '@fontsource/unbounded/latin-500.css';
+/* Шрифты: самохостинг, только кириллица и латиница.
+   Literata для заголовков, Onest для текста, Martian Mono для данных и пометок на полях. */
+@import '@fontsource/literata/cyrillic-400.css';
+@import '@fontsource/literata/latin-400.css';
+@import '@fontsource/literata/cyrillic-500.css';
+@import '@fontsource/literata/latin-500.css';
 @import '@fontsource/onest/cyrillic-400.css';
 @import '@fontsource/onest/latin-400.css';
 @import '@fontsource/onest/cyrillic-500.css';
@@ -10,28 +13,34 @@
 @import '@fontsource/martian-mono/cyrillic-400.css';
 @import '@fontsource/martian-mono/latin-400.css';
 
-/* Ночная схема: один объект на сцене (трассировка запроса), остальное держится на типографике и линиях */
+/* Ночная схема в духе инженерного документа: плоский фон, линейки, один акцент */
 :root {
-  --bg: oklch(0.15 0.014 230);
-  --panel: oklch(0.185 0.016 230);
-  --line: oklch(0.29 0.018 230);
-  --line-soft: oklch(0.22 0.016 230);
+  --bg: oklch(0.155 0.012 230);
+  --panel: oklch(0.185 0.014 230);
+  --line: oklch(0.3 0.016 230);
+  --line-soft: oklch(0.23 0.014 230);
   --fg: oklch(0.95 0.006 220);
-  --muted: oklch(0.72 0.02 225);
+  --muted: oklch(0.72 0.018 225);
+  --faint: oklch(0.56 0.016 225);
   --teal: oklch(0.82 0.12 185);
   --teal-hover: oklch(0.87 0.11 185);
-  --teal-dim: oklch(0.82 0.12 185 / 0.13);
+  --teal-dim: oklch(0.82 0.12 185 / 0.12);
   --magenta: oklch(0.72 0.19 350);
   --amber: oklch(0.84 0.13 80);
-  --on-teal: oklch(0.15 0.014 230);
+  --on-teal: oklch(0.155 0.012 230);
 
-  --display: 'Unbounded', 'Onest', system-ui, sans-serif;
+  --serif: 'Literata', Georgia, 'Times New Roman', serif;
   --text: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'Martian Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  /* Совместимость со старыми компонентами */
+  --display: var(--serif);
 
-  --gutter: clamp(20px, 4vw, 48px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: 24px;
+  --margin-col: 176px;
   color-scheme: dark;
 }
+@media (min-width: 768px) { :root { --gutter: 48px; } }
 
 *,
 *::before,
@@ -46,12 +55,13 @@ body {
   color: var(--fg);
   font-family: var(--text);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 24px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-a { color: var(--fg); text-decoration: none; }
+p { text-wrap: pretty; }
+a { color: var(--fg); text-decoration: none; transition: color 0.2s var(--ease); }
 a:hover { color: var(--teal); }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
@@ -66,63 +76,106 @@ button { font: inherit; color: inherit; }
 
 .mono {
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  line-height: 20px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
+/* Подпись раздела: спокойная пометка, без капса и разрядки */
 .eyebrow {
   margin: 0;
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--teal);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--faint);
 }
+
+/* Документная сетка: узкое поле с пометками слева, основной текст справа */
+.doc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 16px;
+}
+.doc > .margin { margin: 0; }
+@media (min-width: 960px) {
+  .doc { grid-template-columns: var(--margin-col) minmax(0, 1fr); column-gap: 48px; }
+  .doc > .margin { grid-column: 1; }
+  .doc > .main { grid-column: 2; }
+}
+
+.margin {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--faint);
+}
+.margin b { display: block; font-weight: 400; color: var(--fg); }
+.margin p { margin: 0; }
+.margin p + p { margin-top: 12px; }
+
+.section { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line); }
+@media (max-width: 767px) { .section { margin-top: 64px; } }
 
 .h2 {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 32px;
   letter-spacing: -0.01em;
-  line-height: 1.15;
-  margin: 12px 0 0;
+  margin: 0;
+  max-width: 30ch;
   text-wrap: balance;
 }
+@media (min-width: 768px) { .h2 { font-size: 30px; line-height: 36px; } }
 
-.section { padding-block: 24px 96px; }
+.intro { font-size: 16px; line-height: 24px; color: var(--muted); max-width: 62ch; margin: 16px 0 0; }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 44px;
-  padding: 0 18px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--fg);
   font-family: var(--text);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 .btn:hover { border-color: var(--teal); color: var(--fg); }
+.btn:active { transform: scale(0.98); }
 .btn-primary { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
-.btn-primary:hover { background: var(--teal-hover); color: var(--on-teal); }
+.btn-primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); color: var(--on-teal); }
+
+/* Текстовая ссылка с подчёркиванием, для второстепенных действий */
+.link {
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s var(--ease), text-decoration-color 0.2s var(--ease);
+}
+.link:hover { color: var(--teal); text-decoration-color: var(--teal); }
 
 .skip {
   position: absolute;
-  left: -9999px;
+  left: 16px;
   top: 8px;
-  z-index: 20;
-  padding: 10px 14px;
+  z-index: 30;
+  padding: 8px 12px;
   border-radius: 8px;
   background: var(--teal);
   color: var(--on-teal);
+  transform: translateY(-200%);
 }
-.skip:focus { left: 16px; color: var(--on-teal); }
+.skip:focus { transform: none; color: var(--on-teal); }
 
 .visually-hidden {
   position: absolute !important;

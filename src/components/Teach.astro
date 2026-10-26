@@ -1,40 +1,55 @@
 ---
 const courses = [
   {
-    title: 'Воркшоп для команды',
-    text: 'CI/CD без магии: воспроизводимая сборка, откат, секреты. Работаем на вашем репозитории, в конце отчёт с находками.',
+    title: 'Воркшоп по CI/CD',
+    text: 'Воспроизводимая сборка, откат, секреты. Работаем на вашем репозитории, в конце команда получает отчёт с находками.',
+    format: 'для команды · на вашем коде',
   },
   {
     title: 'ИИ-ассистенты без утечек',
-    text: 'Как пустить Claude Code или Copilot в репозиторий и не слить клиентские данные: права, политики, журнал действий агента.',
+    text: 'Как пустить Claude Code или Copilot в репозиторий с клиентскими данными: права, политики, журнал действий агента.',
+    format: 'для команды',
   },
   {
     title: 'Менторство',
-    text: 'Один на один для DevOps-инженеров и тимлидов: разбор ваших задач, а не курс по учебнику.',
+    text: 'Встречи один на один для DevOps-инженеров и тимлидов. Разбираем задачи, которые у вас на столе сейчас.',
+    format: 'один на один',
   },
 ];
 ---
-<section id="teach" class="wrap section">
-  <p class="eyebrow">Обучение</p>
-  <h2 class="h2 heading">Учу команды тому, что делаю в проде.</h2>
-  <div class="items">
-    {courses.map((c) => (
-      <article>
-        <h3>{c.title}</h3>
-        <p class="text">{c.text}</p>
-      </article>
-    ))}
+<section id="teach" class="wrap section doc">
+  <div class="margin">
+    <p><b>§3</b>обучение</p>
+    <p>Формат и сроки обсуждаем в переписке.</p>
   </div>
-  <p class="mono note">Формат и сроки обсуждаем.</p>
+  <div class="main">
+    <h2 class="h2">Учу команды тому, что делаю в проде</h2>
+    <ul class="list">
+      {courses.map((c) => (
+        <li class="item">
+          <h3>{c.title}</h3>
+          <p class="text">{c.text}</p>
+          <p class="mono format">{c.format}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
 </section>
 
 <style>
-  .heading { max-width: 26ch; }
-  .items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 36px; border-top: 1px solid var(--line); padding-top: 28px; }
-  h3 { font-size: 17px; font-weight: 600; margin: 0; }
-  .text { font-size: 15px; line-height: 1.65; color: var(--muted); margin: 12px 0 0; }
-  .note { margin: 28px 0 0; }
-  @media (max-width: 860px) {
-    .items { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .list { list-style: none; margin: 48px 0 0; padding: 0; }
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; line-height: 28px; margin: 0; }
+  .text { font-size: 16px; line-height: 24px; color: var(--muted); margin: 0; max-width: 56ch; }
+  .format { margin: 0; color: var(--faint); }
+  @media (min-width: 768px) {
+    .item { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 192px; gap: 32px; align-items: baseline; }
+    .format { text-align: right; }
   }
 </style>

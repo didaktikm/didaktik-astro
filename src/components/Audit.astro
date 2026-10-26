@@ -5,58 +5,62 @@ const fixed = audit.filter((c) => c.label === 'исправлено').length;
 const okAsIs = audit.filter((c) => c.label === 'в норме').length;
 const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: 'long' });
 ---
-<section id="audit" class="wrap section">
-  <p class="eyebrow">Пример аудита</p>
-  <h2 class="h2 heading">Начал с себя: аудит этого сайта</h2>
-  <p class="intro">Реальные находки по репозиторию didaktik-astro и то, что с ними сделали. У каждой проверки указаны метод, состояние «было» и «стало». Пришлите ссылку на свой сайт, разберу так же.</p>
-
-  <div class="table" role="table" aria-label="Результаты аудита">
-    <div class="row head" role="row">
-      <span class="mono" role="columnheader">проверка</span>
-      <span class="mono" role="columnheader">было</span>
-      <span class="mono" role="columnheader">стало</span>
-      <span class="mono" role="columnheader">статус</span>
-    </div>
-    {audit.map((c) => (
-      <div class="row" role="row">
-        <span class="check" role="cell">{c.check}<span class="mono method">{c.method}</span></span>
-        <span class="mono before" role="cell">{c.before}</span>
-        <span class="mono after" role="cell">{c.after}</span>
-        <span role="cell"><span class:list={['mono', 'pill', c.score]}>{c.label}</span></span>
-      </div>
-    ))}
+<section id="audit" class="wrap section doc">
+  <div class="margin">
+    <p><b>§2</b>аудит</p>
+    <p>{dateLabel}<br />исправлено {fixed}<br />в норме {okAsIs}</p>
   </div>
-  <p class="mono summary">{dateLabel} · исправлено {fixed} · в норме {okAsIs}</p>
+  <div class="main">
+    <h2 class="h2">Аудит этого сайта</h2>
+    <p class="intro">Чтобы было видно, как выглядит результат, я проверил собственный репозиторий didaktik-astro. Ниже реальные находки: как проверял, что было и что стало. Пришлите ссылку на свой проект, разберу так же.</p>
+
+    <ol class="findings">
+      {audit.map((c, i) => (
+        <li class="finding" id={`f${i + 1}`}>
+          <span class="mono num">{i + 1}</span>
+          <div class="what">
+            <h3>{c.check}</h3>
+            <p class="mono method">{c.method}</p>
+          </div>
+          <div class="diff mono" role="group" aria-label="Было и стало">
+            <p class="minus"><span class="sign" aria-hidden="true">−</span><span class="visually-hidden">Было: </span>{c.before}</p>
+            <p class="plus"><span class="sign" aria-hidden="true">+</span><span class="visually-hidden">Стало: </span>{c.after}</p>
+          </div>
+          <span class:list={['mono', 'status', c.score]}>{c.label}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
 </section>
 
 <style>
-  .heading { max-width: 28ch; }
-  .intro { font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 62ch; margin: 16px 0 0; }
-  .table { margin-top: 32px; border-top: 1px solid var(--line); }
-  .row {
+  .findings { list-style: none; margin: 48px 0 0; padding: 0; }
+  .finding {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr) minmax(0, 1.4fr) 72px;
-    gap: 20px;
-    align-items: baseline;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--line-soft);
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    gap: 8px 16px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line-soft);
+    scroll-margin-top: 24px;
   }
-  .head { padding-block: 12px; }
-  .check { display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500; }
-  .method { font-weight: 400; }
-  .before { line-height: 1.6; color: var(--muted); }
-  .after { line-height: 1.6; color: var(--fg); }
-  .pill { display: inline-block; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line); }
-  .pill.pass { color: var(--teal); border-color: var(--teal); }
-  .pill.warn { color: var(--fg); }
-  .pill.fail { color: var(--magenta); border-color: var(--magenta); }
-  .summary { margin: 18px 0 0; }
-  @media (max-width: 860px) {
-    .head { display: none; }
-    .row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
-    .before, .after { grid-column: 1 / -1; }
-    .before::before { content: 'было: '; }
-    .after::before { content: 'стало: '; color: var(--muted); }
-    .row > span:last-child { grid-row: 1; grid-column: 2; }
+  .finding:target { background: var(--teal-dim); }
+  .num { color: var(--faint); }
+  .what { min-width: 0; }
+  h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
+  .method { margin: 4px 0 0; color: var(--faint); }
+  .diff { grid-column: 2 / -1; min-width: 0; }
+  .diff p { margin: 0; display: grid; grid-template-columns: 16px minmax(0, 1fr); }
+  .minus { color: var(--faint); }
+  .minus .sign { color: var(--faint); }
+  .plus { color: var(--fg); margin-top: 4px; }
+  .plus .sign { color: var(--teal); }
+  .status { grid-column: 3; grid-row: 1; white-space: nowrap; color: var(--faint); }
+  .status.pass { color: var(--teal); }
+  .status.fail { color: var(--magenta); }
+
+  @media (min-width: 1024px) {
+    .finding { grid-template-columns: 24px minmax(0, 2fr) minmax(0, 3fr) 96px; gap: 24px; }
+    .diff { grid-column: 3; grid-row: 1; }
+    .status { grid-column: 4; text-align: right; }
   }
 </style>

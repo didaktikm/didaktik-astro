@@ -1,53 +1,79 @@
 ---
+// Направления работы. ref указывает на номер находки в аудите этого сайта (src/data/audit.ts).
 const items = [
   {
-    title: 'Безопасность данных и ИИ-агентов',
-    text: 'Выгрузка клиентских данных в рабочей папке и ИИ-ассистент в IDE: утечка без злого умысла, просто по недоразумению. Нахожу пути, по которым данные могут уйти, и закрываю их правами, политиками и журналом. Агент получает ровно столько доступа, сколько нужно задаче.',
-    io: 'карта потоков данных и доступов → политики, права, секреты и журнал',
-  },
-  {
     title: 'Аудит платформ',
-    text: 'Сверяю, что платформа делает, с тем, что про неё написано, и считаю цену расхождения: часы простоя, деньги, риск. Отчёт заканчивается списком исправлений, самое дорогое сверху.',
-    io: 'доступ на чтение → находка, доказательство, цена исправления',
+    text: 'Сверяю, что платформа делает, с тем, что про неё написано, и считаю цену каждого расхождения: часы простоя, деньги, риск. Отчёт заканчивается списком исправлений, самые дорогие сверху.',
+    io: 'вход: доступ на чтение · выход: находка, доказательство, цена исправления',
+    ref: 2,
   },
   {
-    title: 'Архитектура',
-    text: 'Решения, которые можно объяснить через полгода и проверить цифрами: какую метрику решение должно сдвинуть и по какому признаку мы поймём, что ошиблись.',
-    io: 'требования и ограничения → схема границ, ADR и критерий успеха',
+    title: 'Безопасность данных и ИИ-агентов',
+    text: 'Клиентская выгрузка лежит в рабочей папке, в той же IDE работает ИИ-ассистент. Утечке не нужен злой умысел. Нахожу пути, по которым данные могут уйти, и закрываю их правами, политиками и журналом действий. Агент получает ровно тот доступ, который нужен задаче.',
+    io: 'вход: карта потоков данных и доступов · выход: политики, права, секреты, журнал',
+    ref: 6,
   },
   {
     title: 'DevOps и эксплуатация',
-    text: 'Сборка, доставка, наблюдаемость. Откат, который работает, и алерт, который срабатывает раньше звонка пользователя. У каждого изменения есть цифра до и после.',
-    io: 'текущий пайплайн → воспроизводимый деплой, SLO и runbook',
+    text: 'Сборка, доставка, наблюдаемость. Откат, проверенный на практике. Алерт, который срабатывает раньше, чем позвонит пользователь.',
+    io: 'вход: текущий пайплайн · выход: воспроизводимый деплой, SLO, runbook',
+    ref: 3,
+  },
+  {
+    title: 'Архитектура',
+    text: 'Решения, которые через полгода можно объяснить и проверить. Для каждого записываем, какую метрику оно должно сдвинуть и по какому признаку станет понятно, что мы ошиблись.',
+    io: 'вход: требования и ограничения · выход: схема границ, ADR, критерий успеха',
+    ref: null,
   },
 ];
 ---
-<section id="work" class="wrap section">
-  <p class="eyebrow">Что я делаю</p>
-  <h2 class="h2 heading">Каждая работа заканчивается цифрой «после»</h2>
-  <p class="intro">У каждой работы есть владелец, цифра «до» и цифра «после». Без этого это мнение, а не работа.</p>
-  <div class="work">
-    {items.map((it) => (
-      <article>
-        <h3>{it.title}</h3>
-        <p class="text">{it.text}</p>
-        <p class="mono io">{it.io}</p>
-      </article>
-    ))}
+<section id="work" class="wrap section doc">
+  <div class="margin">
+    <p><b>§1</b>работа</p>
+    <p>Ссылки ведут на находки из аудита этого сайта.</p>
+  </div>
+  <div class="main">
+    <h2 class="h2">С чем ко мне приходят</h2>
+    <p class="intro">По каждой работе фиксируем цифру до начала и цифру после. Пока второй цифры нет, работа не закончена.</p>
+    <ol class="list">
+      {items.map((it) => (
+        <li class="item">
+          <h3>{it.title}</h3>
+          <div class="body">
+            <p class="text">{it.text}</p>
+            <p class="mono io">
+              {it.io}
+              {it.ref && <> · <a class="ref" href={`#f${it.ref}`}>пример: находка {it.ref}</a></>}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
   </div>
 </section>
 
 <style>
-  .heading { max-width: 26ch; }
-  .intro { font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 62ch; margin: 16px 0 0; }
-  .work { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 36px; border-top: 1px solid var(--line); }
-  article { padding: 28px 32px 28px 0; min-width: 0; border-bottom: 1px solid var(--line-soft); }
-  article:nth-child(even) { padding: 28px 0 28px 32px; border-left: 1px solid var(--line); }
-  h3 { font-size: 19px; font-weight: 600; margin: 0; }
-  .text { font-size: 15px; line-height: 1.65; color: var(--muted); margin: 12px 0 18px; }
-  .io { margin: 0; line-height: 1.7; font-size: 12px; color: var(--fg); opacity: 0.75; }
-  @media (max-width: 860px) {
-    .work { grid-template-columns: minmax(0, 1fr); }
-    article, article:nth-child(even) { padding: 24px 0; border-left: 0; }
+  .list { list-style: none; margin: 48px 0 0; padding: 0; }
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .text { font-size: 16px; line-height: 24px; color: var(--muted); margin: 0; max-width: 62ch; }
+  .io { margin: 12px 0 0; color: var(--faint); }
+  .ref { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .ref:hover { color: var(--teal-hover); }
+  @media (min-width: 768px) {
+    .item { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 32px; }
   }
 </style>

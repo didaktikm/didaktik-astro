@@ -1,76 +1,56 @@
 ---
 import Trace from './Trace.astro';
 ---
-<section id="top" class="hero">
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="glow" aria-hidden="true"></div>
-  <div class="wrap inner">
-    <p class="eyebrow">Аудит · архитектура · DevOps · безопасность ИИ-агентов</p>
-    <h1 class="title">Мнение — не метрика. Начнём с этой страницы.</h1>
-    <div class="cols">
-      <div class="intro">
-        <p class="lead">Провожу аудит платформ и проектирую инфраструктуру для команд, у которых уже есть прод. Смотрю на то, что система делает на самом деле, а не на то, что написано в вики, и считаю цену каждого расхождения.</p>
-        <div class="actions">
-          <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Обсудить задачу</a>
-          <a href="#audit" class="btn">Пример аудита</a>
-          <button type="button" class="btn" data-console-open aria-controls="console">
-            <span class="prompt" aria-hidden="true">&gt;_</span>Открыть консоль
-          </button>
-        </div>
-        <p class="mono hint">Это трассировка вашего запроса по живым таймингам браузера. Коснитесь шага, чтобы увидеть подробности. Чужие системы разбираю так же, только глубже.</p>
+<section id="top" class="wrap hero">
+  <div class="doc">
+    <div class="margin">
+      <p><b>Павел</b>руковожу <span class="nw">DevOps-командой</span></p>
+      <p>аудит<br />архитектура<br />DevOps<br />безопасность <span class="nw">ИИ-агентов</span></p>
+    </div>
+    <div class="main">
+      <h1 class="title">Нахожу, где платформа расходится со своей документацией, и считаю, сколько это стоит</h1>
+      <p class="lead">Аудит, архитектура и DevOps для команд, у которых уже есть прод. Отдельно занимаюсь безопасностью ИИ-агентов: какие данные агент видит и куда может их отправить.</p>
+      <div class="actions">
+        <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Написать в Telegram</a>
+        <a href="#audit" class="link">Пример аудита ниже</a>
       </div>
+    </div>
+  </div>
+
+  <div class="doc fig">
+    <p class="margin" id="trace-caption">
+      <b>Рис. 1</b>
+      Ваш запрос к этой странице. Тайминги взяты из вашего браузера. Наведите на шаг или коснитесь его, чтобы увидеть, что там происходит.
+    </p>
+    <div class="main">
       <Trace />
     </div>
   </div>
 </section>
 
 <style>
-  .hero { position: relative; overflow: hidden; }
-  .grid-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      linear-gradient(var(--line-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: 48px 48px;
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%);
-    mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, #000 20%, transparent 75%);
-  }
-  .glow {
-    position: absolute;
-    pointer-events: none;
-    width: 720px;
-    height: 720px;
-    left: -200px;
-    top: -320px;
-    background: radial-gradient(circle, oklch(0.82 0.12 185 / 0.1), transparent 62%);
-  }
-  .inner { position: relative; z-index: 1; padding-block: 56px 96px; }
+  .hero { padding-block: 48px 0; }
   .title {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: clamp(30px, 4.4vw, 58px);
-    line-height: 1.1;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
     letter-spacing: -0.02em;
-    margin: 22px 0 0;
-    max-width: 18ch;
+    margin: 0;
+    max-width: 22ch;
     text-wrap: balance;
   }
-  .cols {
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
-    gap: 56px;
-    align-items: start;
-    margin-top: 48px;
+  .lead { font-size: 18px; line-height: 28px; color: var(--muted); max-width: 56ch; margin: 24px 0 0; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 32px; }
+  .fig { margin-top: 64px; }
+  @media (min-width: 768px) {
+    .hero { padding-top: 64px; }
+    .title { font-size: 48px; line-height: 1; }
   }
-  .intro { min-width: 0; display: flex; flex-direction: column; gap: 28px; }
-  .lead { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 44ch; margin: 0; }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-  .prompt { font-family: var(--mono); color: var(--teal); }
-  .hint { margin: 0; line-height: 1.7; }
-  @media (max-width: 900px) {
-    .cols { grid-template-columns: minmax(0, 1fr); gap: 36px; }
-    .inner { padding-block: 32px 72px; }
+  .nw { white-space: nowrap; }
+  @media (max-width: 959px) {
+    .margin br { display: none; }
+    .margin p:nth-child(2) { display: none; }
+    .fig { margin-top: 48px; }
   }
 </style>

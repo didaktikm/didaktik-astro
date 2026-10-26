@@ -5,14 +5,19 @@ import Work from '../components/Work.astro';
 import Teach from '../components/Teach.astro';
 import Audit from '../components/Audit.astro';
 import LatestNotes from '../components/LatestNotes.astro';
+import Contact from '../components/Contact.astro';
+import { getCollection } from 'astro:content';
+
+const hasNotes = (await getCollection('notes', ({ data }) => !data.draft)).length > 0;
 ---
 <Base
   title="didaktik · аудит платформ, DevOps и безопасность ИИ-агентов"
-  description="Аудит платформ, архитектура, DevOps и безопасность ИИ-агентов. Смотрю на то, что система делает на самом деле."
+  description="Аудит платформ, архитектура, DevOps и безопасность ИИ-агентов для команд, у которых уже есть прод. Нахожу расхождения между тем, что система делает, и тем, что о ней написано."
 >
   <Hero />
   <Work />
-  <Teach />
   <Audit />
-  <LatestNotes />
+  <Teach />
+  <LatestNotes n={4} />
+  <Contact n={hasNotes ? 5 : 4} />
 </Base>

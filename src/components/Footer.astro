@@ -2,11 +2,15 @@
 import { buildSha, buildDate, contactEmail } from '../lib/build';
 ---
 <footer class="foot wrap">
-  <a class="mono email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-  <span class="mono">
-    build {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · 0 трекеров · 0 cookies
-  </span>
-  <span class="mono">uptime: с последнего инцидента</span>
+  <div class="doc">
+    <p class="margin">didaktik.dev</p>
+    <div class="main row">
+      <a class="mono email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <span class="mono">
+        сборка {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · без трекеров и cookies
+      </span>
+    </div>
+  </div>
 </footer>
 
 <script>
@@ -24,15 +28,9 @@ import { buildSha, buildDate, contactEmail } from '../lib/build';
 </script>
 
 <style>
-  .foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px 32px;
-    padding-block: 28px 112px;
-    border-top: 1px solid var(--line);
-  }
-  .email { color: var(--fg); text-decoration: none; }
+  .foot { margin-top: 96px; padding-block: 24px 96px; }
+  .foot > .doc { border-top: 1px solid var(--line); padding-top: 24px; }
+  .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
+  .email { color: var(--fg); }
   .email:hover { color: var(--teal); }
 </style>

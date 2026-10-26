@@ -6,9 +6,9 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .map((n) => ({ id: n.id, title: n.data.title, date: n.data.date.toISOString().slice(0, 10) }));
 ---
-<button type="button" class="launcher" data-console-open aria-controls="console" aria-expanded="false">
+<button type="button" class="launcher" data-console-open aria-controls="console" aria-expanded="false" aria-label="Открыть консоль">
   <span class="prompt" aria-hidden="true">&gt;_</span>
-  <span>консоль</span>
+  <span class="launcher-label">консоль</span>
   <kbd data-console-kbd>⌘K</kbd>
 </button>
 
@@ -288,16 +288,23 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     gap: 10px;
     min-height: 44px;
     padding: 0 16px;
-    border-radius: 999px;
+    border-radius: 12px;
     border: 1px solid var(--teal);
     background: var(--panel);
     font-family: var(--mono);
     font-size: 12px;
     color: var(--fg);
     cursor: pointer;
-    box-shadow: 0 8px 32px oklch(0.1 0.01 230 / 0.6);
+    box-shadow: 0 8px 32px oklch(0.1 0.012 230 / 0.6);
+    transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
   }
   .launcher:hover { background: oklch(0.22 0.02 200); }
+  .launcher:active { transform: scale(0.98); }
+  :global(html.menu-open) .launcher { visibility: hidden; }
+  @media (max-width: 767px) {
+    .launcher { width: 48px; min-height: 48px; padding: 0; justify-content: center; }
+    .launcher-label, .launcher kbd { display: none; }
+  }
   .prompt { color: var(--teal); }
   kbd {
     font-family: inherit;

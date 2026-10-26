@@ -1,18 +1,21 @@
 ---
 interface Props { hasNotes: boolean }
 const { hasNotes } = Astro.props;
-const isHome = Astro.url.pathname === '/';
-const home = isHome ? '' : '/';
+const path = Astro.url.pathname;
+const home = path === '/' ? '' : '/';
+const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
 ---
 <header class="top wrap">
   <a class="logo" href="/" aria-label="didaktik, на главную">didaktik<span aria-hidden="true">_</span></a>
-  <button type="button" class="menu-btn mono" id="menu-btn" aria-expanded="false" aria-controls="site-nav" hidden>Меню</button>
+  <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Меню" hidden>
+    <span class="bars" aria-hidden="true"><span></span><span></span></span>
+  </button>
   <nav class="nav" id="site-nav" aria-label="Основная навигация">
-    <a href={`${home}#work`}>Услуги</a>
-    <a href={`${home}#teach`}>Обучение</a>
+    <a href={`${home}#work`}>Работа</a>
     <a href={`${home}#audit`}>Аудит</a>
-    {hasNotes && <a href="/notes/">Заметки</a>}
-    <a href="/about/">Обо мне</a>
+    <a href={`${home}#teach`}>Обучение</a>
+    {hasNotes && <a href="/notes/" aria-current={current('/notes')}>Заметки</a>}
+    <a href="/about/" aria-current={current('/about')}>Обо мне</a>
     <a class="cta" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать</a>
   </nav>
 </header>
@@ -27,67 +30,103 @@ const home = isHome ? '' : '/';
     const set = (v: boolean) => {
       nav.classList.toggle('open', v);
       btn.setAttribute('aria-expanded', String(v));
+      document.documentElement.classList.toggle('menu-open', v);
     };
     btn.addEventListener('click', () => set(!nav.classList.contains('open')));
     nav.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) set(false); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); }
     });
+    matchMedia('(min-width: 768px)').addEventListener('change', (m) => { if (m.matches) set(false); });
   }
 </script>
 
 <style>
   .top {
     position: relative;
-    z-index: 2;
+    z-index: 20;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    padding-block: 22px;
+    padding-block: 24px;
   }
-  .logo {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -0.01em;
-  }
+  .logo { font-family: var(--mono); font-size: 14px; line-height: 20px; color: var(--fg); }
   .logo span { color: var(--teal); }
-  .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 28px; font-size: 14px; }
-  .nav a { color: var(--muted); }
+  .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 24px; font-size: 14px; line-height: 20px; }
+  .nav a { color: var(--muted); padding-block: 4px; }
   .nav a:hover { color: var(--fg); }
+  .nav a[aria-current='page'] { color: var(--fg); text-decoration: underline; text-decoration-color: var(--teal); text-underline-offset: 8px; text-decoration-thickness: 1px; }
   .nav a.cta { color: var(--teal); }
+
   .menu-btn {
-    min-height: 40px;
-    padding: 0 14px;
+    display: none;
+    position: relative;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    padding: 0;
     border-radius: 8px;
     border: 1px solid var(--line);
     background: transparent;
-    color: var(--fg);
-    font-size: 12px;
     cursor: pointer;
   }
   .menu-btn[hidden] { display: none; }
-  .menu-btn[aria-expanded="true"] { border-color: var(--teal); }
-  .menu-btn { display: none; }
-  @media (max-width: 760px) {
-    .menu-btn:not([hidden]) { display: inline-flex; align-items: center; }
+  .bars { position: relative; display: block; width: 16px; height: 8px; margin: 0 auto; }
+  .bars span {
+    position: absolute;
+    left: 0;
+    width: 16px;
+    height: 1.5px;
+    background: var(--fg);
+    transition: transform 0.5s var(--ease);
+  }
+  .bars span:first-child { top: 0; }
+  .bars span:last-child { bottom: 0; }
+  .menu-btn[aria-expanded='true'] .bars span:first-child { transform: translateY(3.25px) rotate(45deg); }
+  .menu-btn[aria-expanded='true'] .bars span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+
+  @media (max-width: 767px) {
+    .menu-btn:not([hidden]) { display: block; }
     .nav.js {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: max(var(--gutter), env(safe-area-inset-left, 0px));
-      right: max(var(--gutter), env(safe-area-inset-right, 0px));
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
       flex-direction: column;
+      justify-content: flex-start;
       gap: 0;
-      padding: 6px 16px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      box-shadow: 0 16px 40px oklch(0.1 0.01 230 / 0.6);
+      padding: 96px max(var(--gutter), env(safe-area-inset-right, 0px)) 48px max(var(--gutter), env(safe-area-inset-left, 0px));
+      background: oklch(0.155 0.012 230 / 0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s var(--ease), visibility 0s linear 0.3s;
     }
-    .nav.js.open { display: flex; }
-    .nav.js a { padding: 14px 0; font-size: 16px; color: var(--fg); border-bottom: 1px solid var(--line-soft); }
-    .nav.js a:last-child { border-bottom: 0; }
+    .nav.js.open { visibility: visible; opacity: 1; transition: opacity 0.3s var(--ease); }
+    .nav.js a {
+      padding: 16px 0;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 36px;
+      color: var(--fg);
+      border-top: 1px solid var(--line-soft);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+    .nav.js a.cta { color: var(--teal); }
+    .nav.js.open a { opacity: 1; transform: none; }
+    .nav.js.open a:nth-child(2) { transition-delay: 60ms; }
+    .nav.js.open a:nth-child(3) { transition-delay: 120ms; }
+    .nav.js.open a:nth-child(4) { transition-delay: 180ms; }
+    .nav.js.open a:nth-child(5) { transition-delay: 240ms; }
+    .nav.js.open a:nth-child(6) { transition-delay: 300ms; }
+    :global(html.menu-open) { overflow: hidden; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav.js a { transform: none !important; }
+    .bars span { transition: none; }
   }
 </style>
