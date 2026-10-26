@@ -3,7 +3,7 @@ interface Props { hasNotes: boolean }
 const { hasNotes } = Astro.props;
 const path = Astro.url.pathname;
 const home = path === '/' ? '' : '/';
-const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
+const current = (p: string): 'page' | undefined => (path.startsWith(p) ? 'page' : undefined);
 const links: { href: string; label: string; current?: 'page' }[] = [
   { href: `${home}#work`, label: 'Услуги' },
   { href: `${home}#audit`, label: 'Отчёт' },
