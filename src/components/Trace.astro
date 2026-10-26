@@ -75,7 +75,6 @@ const first = SPAN_META.ttfb;
 
     for (const row of rows) {
       const key = row.dataset.span as SpanKey;
-      row.addEventListener('mouseenter', () => select(key));
       row.addEventListener('focus', () => select(key));
       row.addEventListener('click', () => select(key));
     }

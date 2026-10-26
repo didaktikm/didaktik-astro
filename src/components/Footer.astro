@@ -27,20 +27,6 @@ const year = new Date().getFullYear();
   if (document.readyState === 'complete') measure();
   else addEventListener('load', () => setTimeout(measure, 0), { once: true });
 
-  // Имя во всю ширину: размер по измерению, а не на глаз
-  const fit = document.querySelector<HTMLElement>('[data-fit]');
-  const box = fit?.parentElement;
-  if (fit && box) {
-    const run = () => {
-      fit.style.fontSize = '100px';
-      const w = fit.getBoundingClientRect().width;
-      const avail = box.clientWidth;
-      if (w > 0) fit.style.fontSize = `${(100 * avail) / w}px`;
-    };
-    document.fonts?.ready.then(run);
-    addEventListener('resize', run);
-    run();
-  }
 </script>
 
 <style>
@@ -49,12 +35,10 @@ const year = new Date().getFullYear();
   .links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
   .build { margin-top: 16px; font-size: var(--step-small); color: var(--muted); max-width: none; }
   .name {
-    margin: 48px 0 0;
-    line-height: 0.78;
-    white-space: nowrap;
+    margin: 40px 0 0;
+    font-size: var(--step-lead);
     font-weight: 300;
-    letter-spacing: -0.05em;
-    color: color-mix(in srgb, var(--ink) 60%, var(--bg));
+    letter-spacing: -0.01em;
+    color: var(--muted);
   }
-  .name span { display: inline-block; font-size: 22vw; }
 </style>

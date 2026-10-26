@@ -70,7 +70,6 @@ const items = [
       cards.forEach((c) => c.classList.toggle('is-active', c.dataset.card === id));
     };
     rows.forEach((r) => {
-      r.addEventListener('mouseenter', () => pick(r.dataset.work!));
       r.addEventListener('focus', () => pick(r.dataset.work!));
       r.addEventListener('click', () => pick(r.dataset.work!));
     });
@@ -108,7 +107,7 @@ const items = [
     color: var(--muted);
     transition: color var(--t-hover) ease, transform var(--t-ui) var(--ease-out);
   }
-  .short { font-size: var(--step-small); color: var(--muted); }
+  .short { font-size: var(--step-body); color: var(--muted); }
   .row.is-active .big, .row:hover .big { color: var(--ink); }
   .row.is-active .big { transform: translateX(0.12em); }
   .inline { display: none; }
