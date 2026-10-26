@@ -2,22 +2,21 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Work from '../components/Work.astro';
-import Teach from '../components/Teach.astro';
+import Process from '../components/Process.astro';
 import Audit from '../components/Audit.astro';
+import Teach from '../components/Teach.astro';
 import LatestNotes from '../components/LatestNotes.astro';
 import Contact from '../components/Contact.astro';
-import { getCollection } from 'astro:content';
-
-const hasNotes = (await getCollection('notes', ({ data }) => !data.draft)).length > 0;
 ---
 <Base
-  title="didaktik · аудит платформ, DevOps и безопасность ИИ-агентов"
-  description="Аудит платформ, архитектура, DevOps и безопасность ИИ-агентов для команд, у которых уже есть прод. Нахожу расхождения между тем, что система делает, и тем, что о ней написано."
+  title="Павел · аудит инфраструктуры и DevOps, Москва"
+  description="Аудит платформ, DevOps, архитектура и безопасность ИИ-агентов для команд с продом. Больше двадцати лет в инфраструктуре, руковожу DevOps-отделом. Москва."
 >
   <Hero />
   <Work />
+  <Process />
   <Audit />
   <Teach />
-  <LatestNotes n={4} />
-  <Contact n={hasNotes ? 5 : 4} />
+  <LatestNotes />
+  <Contact />
 </Base>

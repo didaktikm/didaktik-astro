@@ -1,79 +1,70 @@
 ---
-// Направления работы. ref указывает на номер находки в аудите этого сайта (src/data/audit.ts).
 const items = [
   {
-    title: 'Аудит платформ',
-    text: 'Сверяю, что платформа делает, с тем, что про неё написано, и считаю цену каждого расхождения: часы простоя, деньги, риск. Отчёт заканчивается списком исправлений, самые дорогие сверху.',
-    io: 'вход: доступ на чтение · выход: находка, доказательство, цена исправления',
-    ref: 2,
-  },
-  {
-    title: 'Безопасность данных и ИИ-агентов',
-    text: 'Клиентская выгрузка лежит в рабочей папке, в той же IDE работает ИИ-ассистент. Утечке не нужен злой умысел. Нахожу пути, по которым данные могут уйти, и закрываю их правами, политиками и журналом действий. Агент получает ровно тот доступ, который нужен задаче.',
-    io: 'вход: карта потоков данных и доступов · выход: политики, права, секреты, журнал',
-    ref: 6,
+    title: 'Аудит платформы',
+    text: 'Сверяю, как платформа работает на самом деле, с тем, как её описывают документация и команда. Для каждого расхождения оцениваю цену: часы простоя, деньги, риск.',
+    result: 'Отчёт с находками и доказательствами, самые дорогие исправления сверху.',
   },
   {
     title: 'DevOps и эксплуатация',
-    text: 'Сборка, доставка, наблюдаемость. Откат, проверенный на практике. Алерт, который срабатывает раньше, чем позвонит пользователь.',
-    io: 'вход: текущий пайплайн · выход: воспроизводимый деплой, SLO, runbook',
-    ref: 3,
+    text: 'Воспроизводимая сборка, предсказуемая доставка, наблюдаемость. Откат, который проверен на практике, и алерты, которые срабатывают раньше жалоб пользователей.',
+    result: 'Рабочий пайплайн, SLO, runbook для дежурных.',
   },
   {
     title: 'Архитектура',
-    text: 'Решения, которые через полгода можно объяснить и проверить. Для каждого записываем, какую метрику оно должно сдвинуть и по какому признаку станет понятно, что мы ошиблись.',
-    io: 'вход: требования и ограничения · выход: схема границ, ADR, критерий успеха',
-    ref: null,
+    text: 'Решения, которые можно объяснить и проверить через полгода. Для каждого фиксируем, какую метрику оно должно сдвинуть и по какому признаку станет понятно, что выбор неверный.',
+    result: 'Схема границ системы, ADR и критерии успеха.',
+  },
+  {
+    title: 'Безопасность ИИ-агентов',
+    text: 'Клиентская выгрузка в рабочей папке и ИИ-ассистент в той же IDE: утечке не нужен злой умысел. Нахожу, куда могут уйти данные, и закрываю эти пути.',
+    result: 'Карта доступов агентов, политики, права, журнал действий.',
   },
 ];
 ---
-<section id="work" class="wrap section doc">
-  <div class="margin">
-    <p><b>§1</b>работа</p>
-    <p>Ссылки ведут на находки из аудита этого сайта.</p>
+<section id="work" class="wrap section">
+  <div class="section-head">
+    <h2 class="h2">Чем могу помочь</h2>
+    <p class="intro">Работаю с командами, у которых система уже в продакшене и цена ошибки измеряется деньгами.</p>
   </div>
-  <div class="main">
-    <h2 class="h2">С чем ко мне приходят</h2>
-    <p class="intro">По каждой работе фиксируем цифру до начала и цифру после. Пока второй цифры нет, работа не закончена.</p>
-    <ol class="list">
-      {items.map((it) => (
-        <li class="item">
-          <h3>{it.title}</h3>
-          <div class="body">
-            <p class="text">{it.text}</p>
-            <p class="mono io">
-              {it.io}
-              {it.ref && <> · <a class="ref" href={`#f${it.ref}`}>пример: находка {it.ref}</a></>}
-            </p>
-          </div>
-        </li>
-      ))}
-    </ol>
+  <div class="grid">
+    {items.map((it) => (
+      <article class="card">
+        <h3>{it.title}</h3>
+        <p class="text">{it.text}</p>
+        <p class="result"><span>Результат</span>{it.result}</p>
+      </article>
+    ))}
   </div>
 </section>
 
 <style>
-  .list { list-style: none; margin: 48px 0 0; padding: 0; }
-  .item {
+  .grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-    padding: 24px 0;
-    border-top: 1px solid var(--line-soft);
+    gap: 16px;
+    margin-top: 48px;
   }
-  h3 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 28px;
-    margin: 0;
-    text-wrap: balance;
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    border-radius: 12px;
+    background: var(--panel);
+    min-width: 0;
   }
-  .text { font-size: 16px; line-height: 24px; color: var(--muted); margin: 0; max-width: 62ch; }
-  .io { margin: 12px 0 0; color: var(--faint); }
-  .ref { color: var(--teal); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
-  .ref:hover { color: var(--teal-hover); }
+  h3 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+  .text { margin: 12px 0 0; font-size: 16px; line-height: 24px; color: var(--muted); }
+  .result {
+    margin: auto 0 0;
+    padding-top: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--fg);
+  }
+  .result span { display: block; margin-bottom: 4px; color: var(--teal); font-weight: 500; }
   @media (min-width: 768px) {
-    .item { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 32px; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
+  @media (max-width: 767px) { .card { padding: 24px; } }
 </style>

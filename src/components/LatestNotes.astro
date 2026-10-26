@@ -1,49 +1,45 @@
 ---
 import { getCollection } from 'astro:content';
 
-interface Props { n: number }
-const { n } = Astro.props;
 const latest = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 ---
 {latest.length > 0 && (
-  <section id="notes" class="wrap section doc">
-    <div class="margin">
-      <p><b>§{n}</b>заметки</p>
-      <p><a class="all" href="/notes/">все заметки →</a></p>
+  <section id="notes" class="wrap section">
+    <div class="head">
+      <h2 class="h2">Заметки</h2>
+      <a class="all" href="/notes/">Все заметки →</a>
     </div>
-    <div class="main">
-      <h2 class="h2">Разборы из практики</h2>
-      <ul class="list">
-        {latest.map((note) => (
-          <li class="item">
-            <time class="mono" datetime={note.data.date.toISOString()}>
-              {note.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}
-            </time>
-            <div>
-              <a class="title" href={`/notes/${note.id}/`}>{note.data.title}</a>
-              <p class="desc">{note.data.description}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul class="list">
+      {latest.map((note) => (
+        <li class="item">
+          <time class="mono" datetime={note.data.date.toISOString()}>
+            {note.data.date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}
+          </time>
+          <div>
+            <a class="title" href={`/notes/${note.id}/`}>{note.data.title}</a>
+            <p class="desc">{note.data.description}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
   </section>
 )}
 
 <style>
-  .list { list-style: none; margin: 48px 0 0; padding: 0; }
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .all { font-size: 16px; line-height: 24px; color: var(--teal); }
+  .list { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--line); }
   .item {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     padding: 24px 0;
-    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
   }
-  .title { font-family: var(--serif); font-size: 20px; line-height: 28px; }
-  .desc { margin: 8px 0 0; color: var(--muted); font-size: 16px; line-height: 24px; max-width: 62ch; }
-  .all { color: var(--teal); }
+  .title { font-size: 18px; line-height: 28px; font-weight: 600; }
+  .desc { margin: 4px 0 0; color: var(--muted); font-size: 16px; line-height: 24px; max-width: 62ch; }
   @media (min-width: 768px) {
     .item { grid-template-columns: 192px minmax(0, 1fr); gap: 32px; }
     .item time { padding-top: 4px; }

@@ -5,62 +5,78 @@ const fixed = audit.filter((c) => c.label === 'исправлено').length;
 const okAsIs = audit.filter((c) => c.label === 'в норме').length;
 const dateLabel = new Date(auditDate).toLocaleDateString('ru-RU', { dateStyle: 'long' });
 ---
-<section id="audit" class="wrap section doc">
-  <div class="margin">
-    <p><b>§2</b>аудит</p>
-    <p>{dateLabel}<br />исправлено {fixed}<br />в норме {okAsIs}</p>
+<section id="audit" class="wrap section">
+  <div class="section-head">
+    <h2 class="h2">Как выглядит отчёт</h2>
+    <p class="intro">Формат на живом примере: аудит репозитория и деплоя этого сайта. Для каждой проверки указаны метод, что было и что сделано.</p>
   </div>
-  <div class="main">
-    <h2 class="h2">Аудит этого сайта</h2>
-    <p class="intro">Чтобы было видно, как выглядит результат, я проверил собственный репозиторий didaktik-astro. Ниже реальные находки: как проверял, что было и что стало. Пришлите ссылку на свой проект, разберу так же.</p>
 
-    <ol class="findings">
-      {audit.map((c, i) => (
-        <li class="finding" id={`f${i + 1}`}>
-          <span class="mono num">{i + 1}</span>
-          <div class="what">
-            <h3>{c.check}</h3>
-            <p class="mono method">{c.method}</p>
-          </div>
-          <div class="diff mono" role="group" aria-label="Было и стало">
-            <p class="minus"><span class="sign" aria-hidden="true">−</span><span class="visually-hidden">Было: </span>{c.before}</p>
-            <p class="plus"><span class="sign" aria-hidden="true">+</span><span class="visually-hidden">Стало: </span>{c.after}</p>
-          </div>
-          <span class:list={['mono', 'status', c.score]}>{c.label}</span>
-        </li>
+  <div class="report">
+    <div class="report-head">
+      <span>didaktik-astro · {dateLabel}</span>
+      <span>исправлено {fixed} · в норме {okAsIs}</span>
+    </div>
+    <div class="table" role="table" aria-label="Результаты аудита">
+      <div class="row head" role="row">
+        <span role="columnheader">Проверка</span>
+        <span role="columnheader">Было</span>
+        <span role="columnheader">Стало</span>
+        <span role="columnheader">Статус</span>
+      </div>
+      {audit.map((c) => (
+        <div class="row" role="row">
+          <span class="check" role="cell">{c.check}<span class="method">{c.method}</span></span>
+          <span class="mono before" role="cell">{c.before}</span>
+          <span class="mono after" role="cell">{c.after}</span>
+          <span class:list={['status', c.score]} role="cell">{c.label}</span>
+        </div>
       ))}
-    </ol>
+    </div>
   </div>
+  <p class="note">Пришлите ссылку на свой проект, и я скажу, что можно проверить и сколько это займёт.</p>
 </section>
 
 <style>
-  .findings { list-style: none; margin: 48px 0 0; padding: 0; }
-  .finding {
-    display: grid;
-    grid-template-columns: 24px minmax(0, 1fr) auto;
-    gap: 8px 16px;
-    padding: 24px 0;
-    border-top: 1px solid var(--line-soft);
-    scroll-margin-top: 24px;
+  .report { margin-top: 48px; border-radius: 12px; background: var(--panel); overflow: hidden; }
+  .report-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted);
   }
-  .finding:target { background: var(--teal-dim); }
-  .num { color: var(--faint); }
-  .what { min-width: 0; }
-  h3 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; }
-  .method { margin: 4px 0 0; color: var(--faint); }
-  .diff { grid-column: 2 / -1; min-width: 0; }
-  .diff p { margin: 0; display: grid; grid-template-columns: 16px minmax(0, 1fr); }
-  .minus { color: var(--faint); }
-  .minus .sign { color: var(--faint); }
-  .plus { color: var(--fg); margin-top: 4px; }
-  .plus .sign { color: var(--teal); }
-  .status { grid-column: 3; grid-row: 1; white-space: nowrap; color: var(--faint); }
+  .table { padding: 0 24px; }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.4fr) minmax(0, 1.4fr) 112px;
+    gap: 24px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .row:last-child { border-bottom: 0; }
+  .head { font-size: 12px; line-height: 16px; color: var(--faint); padding-block: 16px 12px; }
+  .check { display: flex; flex-direction: column; gap: 4px; font-size: 16px; line-height: 24px; font-weight: 500; }
+  .method { font-size: 14px; line-height: 20px; font-weight: 400; color: var(--faint); }
+  .before { color: var(--faint); }
+  .after { color: var(--fg); }
+  .status { font-size: 14px; line-height: 20px; color: var(--muted); white-space: nowrap; }
   .status.pass { color: var(--teal); }
   .status.fail { color: var(--magenta); }
+  .note { margin: 24px 0 0; font-size: 16px; line-height: 24px; color: var(--muted); }
 
-  @media (min-width: 1024px) {
-    .finding { grid-template-columns: 24px minmax(0, 2fr) minmax(0, 3fr) 96px; gap: 24px; }
-    .diff { grid-column: 3; grid-row: 1; }
-    .status { grid-column: 4; text-align: right; }
+  @media (max-width: 899px) {
+    .table { padding: 0 16px; }
+    .report-head { padding: 16px; }
+    .head { display: none; }
+    .row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
+    .before, .after { grid-column: 1 / -1; }
+    .before::before { content: 'было: '; }
+    .after::before { content: 'стало: '; color: var(--faint); }
+    .status { grid-row: 1; grid-column: 2; }
   }
 </style>

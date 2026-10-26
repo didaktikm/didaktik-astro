@@ -9,9 +9,8 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   title="Заметки · didaktik"
   description="Разборы из практики: платформы, доставка, эксплуатация."
 >
-  <div class="wrap page doc">
-    <p class="margin"><b>Заметки</b>{notes.length > 0 && `${notes.length} шт.`}</p>
-    <div class="main">
+  <div class="wrap page">
+    <p class="eyebrow">Заметки</p>
     <h1 class="page-title">Разборы из практики</h1>
     <p class="lead">Что работает, что нет и почему. С командами, конфигами и цифрами.</p>
     {notes.length === 0 ? (
@@ -32,7 +31,6 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
         ))}
       </ul>
     )}
-    </div>
   </div>
 </Base>
 
@@ -47,7 +45,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
     padding: 24px 0;
     border-bottom: 1px solid var(--line-soft);
   }
-  .title { font-family: var(--serif); font-size: 20px; line-height: 28px; }
+  .title { font-size: 18px; line-height: 28px; font-weight: 600; }
   .desc { margin: 8px 0 0; color: var(--muted); font-size: 16px; line-height: 24px; max-width: 62ch; }
   .tags { margin: 10px 0 0; }
   @media (max-width: 640px) { .item { grid-template-columns: minmax(0, 1fr); gap: 6px; } }

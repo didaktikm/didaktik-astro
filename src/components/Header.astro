@@ -11,8 +11,9 @@ const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
     <span class="bars" aria-hidden="true"><span></span><span></span></span>
   </button>
   <nav class="nav" id="site-nav" aria-label="Основная навигация">
-    <a href={`${home}#work`}>Работа</a>
-    <a href={`${home}#audit`}>Аудит</a>
+    <a href={`${home}#work`}>Услуги</a>
+    <a href={`${home}#process`}>Как работаю</a>
+    <a href={`${home}#audit`}>Пример отчёта</a>
     <a href={`${home}#teach`}>Обучение</a>
     {hasNotes && <a href="/notes/" aria-current={current('/notes')}>Заметки</a>}
     <a href="/about/" aria-current={current('/about')}>Обо мне</a>
@@ -52,12 +53,21 @@ const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
     padding-block: 24px;
   }
   .logo { font-family: var(--mono); font-size: 14px; line-height: 20px; color: var(--fg); }
+  .nav { align-items: center; }
   .logo span { color: var(--teal); }
   .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 24px; font-size: 14px; line-height: 20px; }
   .nav a { color: var(--muted); padding-block: 4px; }
   .nav a:hover { color: var(--fg); }
   .nav a[aria-current='page'] { color: var(--fg); text-decoration: underline; text-decoration-color: var(--teal); text-underline-offset: 8px; text-decoration-thickness: 1px; }
-  .nav a.cta { color: var(--teal); }
+  .nav a.cta {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--teal);
+    color: var(--teal);
+    font-weight: 600;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .nav a.cta:hover { background: var(--teal); color: var(--on-teal); }
 
   .menu-btn {
     display: none;
@@ -107,22 +117,23 @@ const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
     .nav.js.open { visibility: visible; opacity: 1; transition: opacity 0.3s var(--ease); }
     .nav.js a {
       padding: 16px 0;
-      font-family: var(--serif);
-      font-size: 30px;
-      line-height: 36px;
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 32px;
       color: var(--fg);
       border-top: 1px solid var(--line-soft);
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
     }
-    .nav.js a.cta { color: var(--teal); }
+    .nav.js a.cta { color: var(--teal); border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; padding: 16px 0; background: none; }
     .nav.js.open a { opacity: 1; transform: none; }
     .nav.js.open a:nth-child(2) { transition-delay: 60ms; }
     .nav.js.open a:nth-child(3) { transition-delay: 120ms; }
     .nav.js.open a:nth-child(4) { transition-delay: 180ms; }
     .nav.js.open a:nth-child(5) { transition-delay: 240ms; }
     .nav.js.open a:nth-child(6) { transition-delay: 300ms; }
+    .nav.js.open a:nth-child(7) { transition-delay: 340ms; }
     :global(html.menu-open) { overflow: hidden; }
   }
   @media (prefers-reduced-motion: reduce) {

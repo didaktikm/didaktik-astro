@@ -1,33 +1,88 @@
 ---
 import Base from '../layouts/Base.astro';
 import { contactEmail } from '../lib/build';
+
+const facts = [
+  { k: 'Город', v: 'Москва' },
+  { k: 'Опыт', v: 'больше 20 лет в инфраструктуре' },
+  { k: 'Сейчас', v: 'руковожу DevOps-отделом' },
+  { k: 'Направления', v: 'аудит платформ, DevOps, архитектура, безопасность <span class="nw">ИИ-агентов</span>' },
+];
+
+const path = [
+  'Инфраструктура распределённой компании: IT-отдел на десяток филиалов, сеть, 1С.',
+  'Корпоративные сети и виртуализация.',
+  'Kubernetes, CI/CD и наблюдаемость в продакшене.',
+  'Платформа данных для банка.',
+  'Руководство DevOps-командой: процессы, дежурства, доставка, бюджет инфраструктуры.',
+];
 ---
 <Base
-  title="Обо мне · didaktik"
-  description="Больше двадцати лет в инфраструктуре, сейчас руковожу DevOps-командой. Коротко о том, кто я."
+  title="Обо мне · Павел, DevOps и архитектура инфраструктуры"
+  description="Больше двадцати лет в инфраструктуре, руковожу DevOps-отделом в Москве. Аудит платформ, DevOps, архитектура и безопасность ИИ-агентов."
 >
-  <div class="wrap page doc">
-    <p class="margin"><b>Обо мне</b></p>
-    <div class="main">
-    <h1 class="page-title">Павел. Двадцать с лишним лет в инфраструктуре</h1>
-    <div class="prose body">
-      <p>Начинал с 1С 7.7 и IT-отдела на десяток филиалов, потом были сеть на 256 портов, виртуалки, Kubernetes, озеро данных для банка и очень много ночных алертов. Про 1С вспоминаю с теплотой, про алерты помню всё.</p>
-      <p>Сейчас руковожу DevOps-командой: собираю пайплайны, чиню то, что «как-то работает», и учу ИИ-агентов не удалять тесты, когда те падают.</p>
-      <p>Здесь буду писать о том, что видел сам: что сработало, что сломалось и почему.</p>
-      <p>Вне работы Ducati Multistrada и штанга. КМС по пауэрлифтингу, так что поднять упавший прод при случае могу и руками.</p>
-      <p class="mono contact">
-        <span>{contactEmail}</span>
-        <span aria-hidden="true"> · </span>
-        <a href="https://t.me/didaktik" rel="noopener">Написать в Telegram</a>
-      </p>
-    </div>
+  <div class="wrap page">
+    <p class="eyebrow">Обо мне</p>
+    <h1 class="page-title">Павел, руководитель <span class="nw">DevOps-отдела</span> и консультант по инфраструктуре</h1>
+
+    <div class="layout">
+      <div class="prose">
+        <p>Больше двадцати лет занимаюсь инфраструктурой: начинал с сетей и IT-отдела распределённой компании, дальше были виртуализация, Kubernetes, CI/CD и платформа данных для банка. Сейчас руковожу DevOps-отделом в Москве.</p>
+        <p>Как консультант помогаю командам, у которых уже есть прод: провожу аудит платформ, проектирую инфраструктуру и налаживаю доставку. Отдельное направление — безопасность ИИ-агентов в разработке: как дать Claude Code или Copilot доступ к репозиторию и не потерять контроль над данными.</p>
+        <p>Параллельно с основной работой веду собственные исследования и обучаю команды. В заметках пишу о том, что проверил на практике.</p>
+
+        <h2>Путь</h2>
+        <ul>
+          {path.map((item) => <li>{item}</li>)}
+        </ul>
+
+        <h2>Вне работы</h2>
+        <p>Мотоцикл Ducati и пауэрлифтинг, кандидат в мастера спорта.</p>
+      </div>
+
+      <aside class="card" aria-label="Коротко">
+        <dl>
+          {facts.map((f) => (
+            <div class="fact">
+              <dt>{f.k}</dt>
+              <dd set:html={f.v} />
+            </div>
+          ))}
+        </dl>
+        <div class="contact">
+          <a class="btn btn-primary" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать в Telegram</a>
+          <a class="mail" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        </div>
+      </aside>
     </div>
   </div>
 </Base>
 
 <style>
-  .body { margin-top: 40px; }
-  .contact { font-size: 14px; line-height: 20px; color: var(--fg); margin-top: 32px; }
-  .contact span:first-child { user-select: all; }
-  .contact a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+    margin-top: 48px;
+  }
+  .card {
+    align-self: start;
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--panel);
+  }
+  dl { margin: 0; }
+  :global(.nw) { white-space: nowrap; }
+  .fact { padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+  .fact:first-child { padding-top: 0; }
+  dt { font-size: 14px; line-height: 20px; color: var(--faint); }
+  dd { margin: 4px 0 0; font-size: 16px; line-height: 24px; }
+  .contact { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .contact .btn { justify-content: center; }
+  .mail { font-size: 14px; line-height: 20px; color: var(--muted); text-align: center; }
+  .mail:hover { color: var(--teal); }
+  @media (min-width: 960px) {
+    .layout { grid-template-columns: minmax(0, 1fr) 336px; gap: 64px; }
+    .card { position: sticky; top: 24px; }
+  }
 </style>

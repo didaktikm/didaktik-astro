@@ -1,56 +1,62 @@
 ---
-import Trace from './Trace.astro';
+const facts = [
+  { value: '20+ лет', text: 'в инфраструктуре: сети, виртуализация, Kubernetes, платформы данных' },
+  { value: 'Head of DevOps', text: 'руковожу DevOps-отделом, отвечаю за прод и доставку' },
+  { value: 'ИИ-агенты', text: 'безопасный доступ Claude Code и Copilot к репозиториям с данными' },
+];
 ---
 <section id="top" class="wrap hero">
-  <div class="doc">
-    <div class="margin">
-      <p><b>Павел</b>руковожу <span class="nw">DevOps-командой</span></p>
-      <p>аудит<br />архитектура<br />DevOps<br />безопасность <span class="nw">ИИ-агентов</span></p>
-    </div>
-    <div class="main">
-      <h1 class="title">Нахожу, где платформа расходится со своей документацией, и считаю, сколько это стоит</h1>
-      <p class="lead">Аудит, архитектура и DevOps для команд, у которых уже есть прод. Отдельно занимаюсь безопасностью ИИ-агентов: какие данные агент видит и куда может их отправить.</p>
-      <div class="actions">
-        <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Написать в Telegram</a>
-        <a href="#audit" class="link">Пример аудита ниже</a>
-      </div>
-    </div>
+  <p class="who">Павел · DevOps и архитектура инфраструктуры · Москва</p>
+  <h1 class="title">Аудит и развитие инфраструктуры для&nbsp;команд, у&nbsp;которых уже есть прод</h1>
+  <p class="lead">Разбираю, как платформа работает на самом деле, нахожу слабые места в сборке, доставке, наблюдаемости и доступах, оцениваю цену каждого и помогаю закрыть самые дорогие.</p>
+  <div class="actions">
+    <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Обсудить задачу в Telegram</a>
+    <a href="#process" class="btn">Как строится работа</a>
   </div>
 
-  <div class="doc fig">
-    <p class="margin" id="trace-caption">
-      <b>Рис. 1</b>
-      Ваш запрос к этой странице. Тайминги взяты из вашего браузера. Наведите на шаг или коснитесь его, чтобы увидеть, что там происходит.
-    </p>
-    <div class="main">
-      <Trace />
-    </div>
-  </div>
+  <dl class="facts">
+    {facts.map((f) => (
+      <div class="fact">
+        <dt>{f.value}</dt>
+        <dd>{f.text}</dd>
+      </div>
+    ))}
+  </dl>
 </section>
 
 <style>
-  .hero { padding-block: 48px 0; }
+  .hero { padding-block: 64px 0; }
+  .who { margin: 0; font-size: 16px; line-height: 24px; color: var(--teal); font-weight: 500; }
   .title {
-    font-family: var(--serif);
-    font-weight: 400;
+    font-family: var(--text);
+    font-weight: 600;
     font-size: 36px;
     line-height: 40px;
-    letter-spacing: -0.02em;
-    margin: 0;
-    max-width: 22ch;
-    text-wrap: balance;
+    letter-spacing: -0.025em;
+    margin: 16px 0 0;
+    max-width: 20ch;
   }
-  .lead { font-size: 18px; line-height: 28px; color: var(--muted); max-width: 56ch; margin: 24px 0 0; }
-  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 32px; }
-  .fig { margin-top: 64px; }
+  .lead { font-size: 18px; line-height: 28px; color: var(--muted); max-width: 60ch; margin: 24px 0 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+
+  .facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    margin: 80px 0 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+  .fact { min-width: 0; }
+  dt { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+  dd { margin: 8px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); max-width: 32ch; }
+
   @media (min-width: 768px) {
-    .hero { padding-top: 64px; }
-    .title { font-size: 48px; line-height: 1; }
+    .hero { padding-top: 96px; }
+    .title { font-size: 48px; line-height: 1.08; }
+    .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; }
   }
-  .nw { white-space: nowrap; }
-  @media (max-width: 959px) {
-    .margin br { display: none; }
-    .margin p:nth-child(2) { display: none; }
-    .fig { margin-top: 48px; }
+  @media (min-width: 1200px) {
+    .title { font-size: 60px; line-height: 1.05; max-width: 24ch; }
   }
 </style>

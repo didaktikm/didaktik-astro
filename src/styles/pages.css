@@ -1,12 +1,13 @@
 /* Внутренние страницы: заметки, «Обо мне», 404 */
-.page { padding-block: 48px 96px; }
+.page { padding-block: 64px 0; }
+.eyebrow { margin: 0; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--teal); }
 
 .page-title {
-  font-family: var(--serif);
-  font-weight: 400;
+  font-family: var(--text);
+  font-weight: 600;
   font-size: 36px;
   line-height: 40px;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   margin: 16px 0 0;
   max-width: 22ch;
   text-wrap: balance;
@@ -25,8 +26,8 @@
 .prose > * + * { margin-top: 1.1em; }
 .prose p, .prose li { font-size: 18px; line-height: 28px; }
 .prose h2 {
-  font-family: var(--serif);
-  font-weight: 400;
+  font-family: var(--text);
+  font-weight: 600;
   font-size: 24px;
   line-height: 32px;
   margin-top: 2.2em;

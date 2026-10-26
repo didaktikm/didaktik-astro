@@ -1,0 +1,48 @@
+---
+const steps = [
+  {
+    title: 'Знакомство',
+    text: 'Переписка или созвон: что за система, что беспокоит, какие сроки и ограничения. По итогам говорю, могу ли помочь и в каком формате.',
+  },
+  {
+    title: 'Аудит',
+    text: 'Доступ на чтение к репозиториям, CI/CD, мониторингу и облаку. Смотрю, как система работает на самом деле, и разговариваю с командой.',
+  },
+  {
+    title: 'Отчёт и план',
+    text: 'Находки с доказательствами и оценкой цены, порядок исправлений. Дальше исправляем вместе, или команда идёт по плану сама.',
+  },
+];
+---
+<section id="process" class="wrap section">
+  <div class="section-head">
+    <h2 class="h2">Как строится работа</h2>
+  </div>
+  <ol class="steps">
+    {steps.map((s, i) => (
+      <li class="step">
+        <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{s.title}</h3>
+        <p>{s.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 48px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .step { padding-top: 24px; border-top: 1px solid var(--line); min-width: 0; }
+  .num { font-family: var(--mono); font-size: 12px; line-height: 20px; color: var(--teal); }
+  h3 { margin: 12px 0 0; font-size: 20px; line-height: 28px; font-weight: 600; }
+  p { margin: 8px 0 0; font-size: 16px; line-height: 24px; color: var(--muted); }
+  @media (min-width: 768px) {
+    .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; }
+  }
+</style>

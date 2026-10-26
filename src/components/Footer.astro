@@ -1,16 +1,17 @@
 ---
 import { buildSha, buildDate, contactEmail } from '../lib/build';
+const year = new Date().getFullYear();
 ---
 <footer class="foot wrap">
-  <div class="doc">
-    <p class="margin">didaktik.dev</p>
-    <div class="main row">
-      <a class="mono email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      <span class="mono">
-        сборка {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · без трекеров и cookies
-      </span>
-    </div>
+  <div class="row">
+    <span>© {year} Павел · didaktik.dev · Москва</span>
+    <span class="links">
+      <a href="https://t.me/didaktik" target="_blank" rel="noopener">Telegram</a>
+      <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+      <a href="/rss.xml">RSS</a>
+    </span>
   </div>
+  <p class="mono build">сборка {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · без трекеров и cookies</p>
 </footer>
 
 <script>
@@ -28,9 +29,10 @@ import { buildSha, buildDate, contactEmail } from '../lib/build';
 </script>
 
 <style>
-  .foot { margin-top: 96px; padding-block: 24px 96px; }
-  .foot > .doc { border-top: 1px solid var(--line); padding-top: 24px; }
-  .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
-  .email { color: var(--fg); }
-  .email:hover { color: var(--teal); }
+  .foot { margin-top: 96px; padding-block: 32px 96px; border-top: 1px solid var(--line); }
+  .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; font-size: 14px; line-height: 20px; color: var(--muted); }
+  .links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .links a { color: var(--fg); }
+  .links a:hover { color: var(--teal); }
+  .build { margin: 16px 0 0; color: var(--faint); }
 </style>

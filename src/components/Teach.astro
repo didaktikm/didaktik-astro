@@ -1,55 +1,46 @@
 ---
 const courses = [
   {
-    title: 'Воркшоп по CI/CD',
-    text: 'Воспроизводимая сборка, откат, секреты. Работаем на вашем репозитории, в конце команда получает отчёт с находками.',
-    format: 'для команды · на вашем коде',
+    title: 'Воркшоп по CI/CD для команды',
+    text: 'Воспроизводимая сборка, откат, работа с секретами. Работаем на вашем репозитории, в конце команда получает отчёт с находками.',
   },
   {
     title: 'ИИ-ассистенты без утечек',
-    text: 'Как пустить Claude Code или Copilot в репозиторий с клиентскими данными: права, политики, журнал действий агента.',
-    format: 'для команды',
+    text: 'Как подключить Claude Code или Copilot к репозиторию с клиентскими данными: права, политики, журнал действий агента.',
   },
   {
     title: 'Менторство',
-    text: 'Встречи один на один для DevOps-инженеров и тимлидов. Разбираем задачи, которые у вас на столе сейчас.',
-    format: 'один на один',
+    text: 'Встречи один на один для DevOps-инженеров и тимлидов. Разбираем задачи, которые стоят перед вами сейчас.',
   },
 ];
 ---
-<section id="teach" class="wrap section doc">
-  <div class="margin">
-    <p><b>§3</b>обучение</p>
-    <p>Формат и сроки обсуждаем в переписке.</p>
+<section id="teach" class="wrap section">
+  <div class="section-head">
+    <h2 class="h2">Обучение и менторство</h2>
+    <p class="intro">Учу тому, что применяю в продакшене сам. Формат и сроки обсуждаем под задачу.</p>
   </div>
-  <div class="main">
-    <h2 class="h2">Учу команды тому, что делаю в проде</h2>
-    <ul class="list">
-      {courses.map((c) => (
-        <li class="item">
-          <h3>{c.title}</h3>
-          <p class="text">{c.text}</p>
-          <p class="mono format">{c.format}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
+  <ul class="list">
+    {courses.map((c) => (
+      <li class="item">
+        <h3>{c.title}</h3>
+        <p>{c.text}</p>
+      </li>
+    ))}
+  </ul>
 </section>
 
 <style>
-  .list { list-style: none; margin: 48px 0 0; padding: 0; }
+  .list { list-style: none; margin: 48px 0 0; padding: 0; border-top: 1px solid var(--line); }
   .item {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     padding: 24px 0;
-    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
   }
-  h3 { font-family: var(--serif); font-weight: 400; font-size: 20px; line-height: 28px; margin: 0; }
-  .text { font-size: 16px; line-height: 24px; color: var(--muted); margin: 0; max-width: 56ch; }
-  .format { margin: 0; color: var(--faint); }
+  h3 { margin: 0; font-size: 18px; line-height: 28px; font-weight: 600; }
+  p { margin: 0; font-size: 16px; line-height: 24px; color: var(--muted); max-width: 62ch; }
   @media (min-width: 768px) {
-    .item { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 192px; gap: 32px; align-items: baseline; }
-    .format { text-align: right; }
+    .item { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 48px; align-items: baseline; }
   }
 </style>
