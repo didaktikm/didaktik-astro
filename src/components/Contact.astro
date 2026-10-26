@@ -1,32 +1,96 @@
 ---
 import { contactEmail } from '../lib/build';
 ---
-<section id="contact" class="wrap section">
-  <div class="box">
-    <div>
-      <h2 class="h2">Обсудим вашу систему</h2>
-      <p class="intro">Опишите в паре абзацев, что за система и что беспокоит. Отвечу, могу ли помочь и с чего имеет смысл начать.</p>
-    </div>
-    <div class="actions">
-      <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Написать в Telegram</a>
-      <a href={`mailto:${contactEmail}`} class="btn">{contactEmail}</a>
-    </div>
+<section id="contact" class="contact wrap" data-reveal>
+  <div class="col">
+    <h2 class="prompt head" data-rv="0">
+      <span class="soft">Расскажите о&nbsp;системе.</span>
+      <span>Отвечаю сам</span>
+    </h2>
+  </div>
+  <div class="col">
+
+    <form class="field" action={`mailto:${contactEmail}`} method="get" enctype="text/plain" data-contact data-rv="1">
+      <label for="contact-text" class="visually-hidden">Коротко о вашей системе</label>
+      <input id="contact-text" name="body" type="text" placeholder="Kubernetes, 40 сервисов, релизы ломаются по пятницам" autocomplete="off" />
+      <input type="hidden" name="subject" value="Аудит инфраструктуры" />
+      <button type="submit" class="send" aria-label="Отправить письмо">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </form>
+    <p class="hint" data-rv="2">Откроется ваша почта с этим текстом. Можно сразу в <a class="link" href="https://t.me/didaktik" target="_blank" rel="noopener">Telegram</a>.</p>
+
+    <dl class="facts" data-rv="3">
+      <div><dt>Почта</dt><dd><a class="link" href={`mailto:${contactEmail}`}>{contactEmail}</a></dd></div>
+      <div><dt>Telegram</dt><dd><a class="link" href="https://t.me/didaktik" target="_blank" rel="noopener">@didaktik</a></dd></div>
+      <div><dt>Город</dt><dd>Москва, работаю удалённо</dd></div>
+    </dl>
   </div>
 </section>
 
+<script>
+  // Почтовый клиент получает тему и текст без «+» вместо пробелов
+  const form = document.querySelector<HTMLFormElement>('[data-contact]');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = (form.querySelector<HTMLInputElement>('#contact-text')?.value ?? '').trim();
+    const subject = encodeURIComponent('Аудит инфраструктуры');
+    const body = encodeURIComponent(text ? `${text}\n\n` : '');
+    location.href = `${form.getAttribute('action')}?subject=${subject}&body=${body}`;
+  });
+</script>
+
 <style>
-  .box {
+  .contact { padding-top: var(--gap-section); }
+  .contact { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: var(--margin) calc(var(--margin) * 2); align-items: start; }
+  .prompt { display: flex; flex-direction: column; }
+  .soft { color: var(--muted); }
+
+  .field { position: relative; }
+  .field input[type='text'] {
+    width: 100%;
+    height: 68px;
+    padding: 0 76px 0 24px;
+    border: 0;
+    border-radius: 0;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: var(--step-body);
+    outline: none;
+  }
+  .field input::placeholder { color: color-mix(in srgb, var(--bg) 62%, var(--ink)); }
+  .field input:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); } /* taste-skill-ignore: кольцо фокуса поля, не тень */
+  .send {
+    position: absolute;
+    right: 8px;
+    top: 8px;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-    padding: 48px;
-    border-radius: 16px;
-    background: var(--panel);
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    transition: background-color var(--t-hover) ease, transform var(--t-press) var(--ease-out);
   }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-content: start; }
-  @media (min-width: 960px) {
-    .box { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: center; }
-    .actions { justify-content: flex-end; }
+  .send:hover { background: var(--accent-hover); }
+  .send:active { transform: scale(0.94); }
+  .send svg { transition: transform var(--t-ui) var(--ease-out); }
+  .send:hover svg { transform: translateX(3px); }
+  .hint { margin-top: 16px; font-size: var(--step-small); color: var(--muted); }
+
+  .facts { display: grid; gap: 14px; margin: 64px 0 0; }
+  .facts div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; }
+
+  @media (max-width: 899px) {
+    .contact { grid-template-columns: minmax(0, 1fr); }
+    .field { margin-top: 16px; }
+    .field input[type='text'] { height: 60px; padding-left: 16px; }
+    .send { top: 4px; right: 4px; }
+    .facts div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   }
-  @media (max-width: 767px) { .box { padding: 24px; } }
 </style>

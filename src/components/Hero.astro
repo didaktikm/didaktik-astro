@@ -1,62 +1,62 @@
 ---
-const facts = [
-  { value: '20+ лет', text: 'в инфраструктуре: сети, виртуализация, Kubernetes, платформы данных' },
-  { value: 'Head of DevOps', text: 'руковожу DevOps-департаментом: прод, доставка, платформа' },
-  { value: 'ИИ-агенты', text: 'безопасный доступ Claude Code и Copilot к репозиториям с данными' },
-];
+import Trace from './Trace.astro';
 ---
-<section id="top" class="wrap hero">
-  <p class="who">Павел · DevOps и архитектура инфраструктуры · Москва</p>
-  <h1 class="title">Аудит и развитие инфраструктуры для&nbsp;команд, у&nbsp;которых уже есть прод</h1>
-  <p class="lead">Разбираю, как платформа работает на самом деле, нахожу слабые места в сборке, доставке, наблюдаемости и доступах, оцениваю цену каждого и помогаю закрыть самые дорогие.</p>
-  <div class="actions">
-    <a href="https://t.me/didaktik" class="btn btn-primary" target="_blank" rel="noopener">Обсудить задачу в Telegram</a>
-    <a href="#process" class="btn">Как строится работа</a>
+<section id="top" class="hero">
+  <div class="say wrap" data-reveal>
+    <h1 class="title" data-rv="0">Аудит инфраструктуры<br class="br" /> и&nbsp;DevOps</h1>
+    <p class="lead" data-rv="1">Павел, руковожу DevOps-департаментом в&nbsp;Москве. Разбираю, как ваша платформа работает на&nbsp;самом деле, и&nbsp;закрываю самые дорогие слабые места.</p>
+    <div class="actions" data-rv="2">
+      <a class="btn" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>
+      <a class="link more" href="#audit">Пример отчёта</a>
+    </div>
   </div>
 
-  <dl class="facts">
-    {facts.map((f) => (
-      <div class="fact">
-        <dt>{f.value}</dt>
-        <dd>{f.text}</dd>
-      </div>
-    ))}
-  </dl>
+  <div class="stage">
+    <div class="fit" data-reveal>
+      <div data-rv="1"><Trace /></div>
+    </div>
+  </div>
 </section>
 
 <style>
-  .hero { padding-block: 64px 0; }
-  .who { margin: 0; font-size: 16px; line-height: 24px; color: var(--teal); font-weight: 500; }
-  .title {
-    font-family: var(--text);
-    font-weight: 600;
-    font-size: 36px;
-    line-height: 40px;
-    letter-spacing: -0.025em;
-    margin: 16px 0 0;
-    max-width: 20ch;
-  }
-  .lead { font-size: 18px; line-height: 28px; color: var(--muted); max-width: 60ch; margin: 24px 0 0; }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
-
-  .facts {
+  .hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
-    margin: 80px 0 0;
-    padding-top: 32px;
-    border-top: 1px solid var(--line);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100svh;
+    min-height: max(100svh, 760px);
   }
-  .fact { min-width: 0; }
-  dt { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
-  dd { margin: 8px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); max-width: 32ch; }
+  .say {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 32px;
+    padding-block: 140px 56px;
+    background: var(--bg);
+  }
+  .title {
+    font-size: var(--step-head);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    max-width: 21ch;
+  }
+  .lead { font-size: var(--step-lead); line-height: 1.35; max-width: 34ch; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; margin-top: 8px; }
+  .more { min-height: 44px; display: inline-flex; align-items: center; }
 
-  @media (min-width: 768px) {
-    .hero { padding-top: 96px; }
-    .title { font-size: 48px; line-height: 1.08; }
-    .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; }
+  .stage {
+    display: grid;
+    place-items: center;
+    padding: 120px var(--margin) 56px;
+    background: var(--surface);
   }
-  @media (min-width: 1200px) {
-    .title { font-size: 60px; line-height: 1.05; max-width: 24ch; }
+  .fit { width: min(100%, 640px); }
+
+  @media (max-width: 899px) {
+    .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+    .say { padding-block: 120px 56px; gap: 24px; }
+    .stage { padding: 32px var(--margin) 48px; }
+    .br { display: none; }
+    .title { font-size: clamp(2rem, 8.4vw, 3rem); }
   }
 </style>

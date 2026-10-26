@@ -20,13 +20,14 @@ const published = await getCollection('notes', ({ data }) => !data.draft);
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="color-scheme" content="dark" />
-<meta name="theme-color" content="#0d1519" />
+<script is:inline src="/init.js"></script>
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#1c1c1c" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
-<link rel="alternate" type="application/rss+xml" title="didaktik" href="/rss.xml" />
 <meta property="og:site_name" content="didaktik" />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={title} />

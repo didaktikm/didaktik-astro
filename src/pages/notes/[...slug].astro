@@ -18,22 +18,29 @@ const minutes = Math.max(1, Math.round(words / 180));
   description={entry.data.description}
   type="article"
 >
-  <article class="wrap page">
-    <p class="mono meta">
-      <time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>
-      · {minutes} мин чтения
-      {entry.data.tags.length > 0 && <span> · {entry.data.tags.join(' · ')}</span>}
-    </p>
-    <h1 class="page-title">{entry.data.title}</h1>
-    <p class="lead">{entry.data.description}</p>
-    <div class="prose body">
-      <Content />
+  <article class="page wrap">
+    <div class="grid">
+      <header class="head-col">
+        <h1 class="page-title">{entry.data.title}</h1>
+        <p class="page-lead">{entry.data.description}</p>
+        <p class="meta">
+          <time datetime={date.toISOString()}>{date.toLocaleDateString('ru-RU', { dateStyle: 'long' })}</time>, {minutes}&nbsp;мин чтения{entry.data.tags.length > 0 && `, ${entry.data.tags.join(', ')}`}
+        </p>
+      </header>
+      <div class="prose body">
+        <Content />
+        <a class="back" href="/notes/">Все заметки</a>
+      </div>
     </div>
-    <a class="back" href="/notes/">← Все заметки</a>
   </article>
 </Base>
 
 <style>
-  .meta { margin: 0; }
-  .body { margin-top: 48px; }
+  .meta { margin-top: 24px; font-size: var(--step-small); color: var(--muted); }
+  .body { margin-top: 64px; }
+  @media (min-width: 1200px) {
+    .grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: calc(var(--margin) * 2); align-items: start; }
+    .head-col { position: sticky; top: 40px; }
+    .body { margin-top: 0; }
+  }
 </style>

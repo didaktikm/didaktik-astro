@@ -1,32 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
+const rows = [
+  { k: 'Влияние', v: 'Вы и, возможно, ещё один человек.' },
+  { k: 'Причина', v: 'Ссылка устарела, в адресе опечатка или страницу так и не написали.' },
+  { k: 'Что делать', v: 'Вернуться на главную или открыть консоль и набрать ls notes.' },
+  { k: 'Задачи на потом', v: 'Никаких. Это не DNS, мы проверили.' },
+];
 ---
 <Base title="404 · didaktik" description="Страница не найдена.">
-  <div class="wrap page">
-    <p class="eyebrow">Инцидент · SEV-4</p>
-    <h1 class="page-title">404. Такой страницы нет.</h1>
-    <dl class="pm">
-      <dt class="mono">impact</dt><dd>Вы и, возможно, ещё один человек.</dd>
-      <dt class="mono">root cause</dt><dd>Ссылка устарела, опечатка в адресе или страницу так и не написали.</dd>
-      <dt class="mono">mitigation</dt><dd><a href="/">Вернуться на главную</a> или открыть консоль и набрать <code>ls notes</code>.</dd>
-      <dt class="mono">action items</dt><dd>Ничего не делать. Это не DNS, мы проверили.</dd>
-    </dl>
+  <div class="page wrap" data-reveal>
+    <div class="grid">
+      <div>
+        <h1 class="page-title" data-rv="0">404. Такой страницы нет</h1>
+        <p class="page-lead" data-rv="1">Разбор инцидента, как положено, без поиска виноватых.</p>
+        <p data-rv="2"><a class="btn go" href="/">На главную</a></p>
+      </div>
+      <dl class="pm">
+        {rows.map((r, i) => <div data-rv={i + 3}><dt>{r.k}</dt><dd>{r.v}</dd></div>)}
+      </dl>
+    </div>
   </div>
 </Base>
 
 <style>
-  .pm {
-    display: grid;
-    grid-template-columns: minmax(0, 160px) minmax(0, 1fr);
-    gap: 16px 24px;
-    margin: 48px 0 0;
-    max-width: 760px;
-    padding-top: 24px;
-    border-top: 1px solid var(--line);
-  }
-  dt { padding-top: 4px; }
-  dd { margin: 0; font-size: 16px; line-height: 24px; }
-  dd a { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
-  code { font-family: var(--mono); font-size: 0.85em; padding: 2px 6px; border-radius: 4px; background: var(--panel); border: 1px solid var(--line-soft); }
-  @media (max-width: 640px) { .pm { grid-template-columns: minmax(0, 1fr); gap: 4px; } dd { margin-bottom: 14px; } }
+  .grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: calc(var(--margin) * 2); align-items: end; min-height: 52vh; }
+  .go { margin-top: 40px; }
+  .pm { margin: 0; padding: 32px; background: var(--surface); display: grid; gap: 20px; }
+  .pm dt { font-size: var(--step-small); color: var(--muted); }
+  .pm dd { margin: 4px 0 0; }
+  @media (max-width: 899px) { .grid { grid-template-columns: minmax(0, 1fr); min-height: 0; } .pm { padding: 24px; } }
 </style>

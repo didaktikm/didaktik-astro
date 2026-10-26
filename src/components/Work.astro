@@ -1,70 +1,152 @@
 ---
 const items = [
   {
+    id: 'audit',
     title: 'Аудит платформы',
+    short: 'сборка, доставка, наблюдаемость, доступы',
     text: 'Сверяю, как платформа работает на самом деле, с тем, как её описывают документация и команда. Для каждого расхождения оцениваю цену: часы простоя, деньги, риск.',
     result: 'Отчёт с находками и доказательствами, самые дорогие исправления сверху.',
   },
   {
+    id: 'ops',
     title: 'DevOps и эксплуатация',
-    text: 'Воспроизводимая сборка, предсказуемая доставка, наблюдаемость. Откат, который проверен на практике, и алерты, которые срабатывают раньше жалоб пользователей.',
+    short: 'пайплайн, откат, алерты',
+    text: 'Воспроизводимая сборка и предсказуемая доставка. Откат, проверенный на практике, и алерты, которые срабатывают раньше жалоб пользователей.',
     result: 'Рабочий пайплайн, SLO, runbook для дежурных.',
   },
   {
+    id: 'arch',
     title: 'Архитектура',
-    text: 'Решения, которые можно объяснить и проверить через полгода. Для каждого фиксируем, какую метрику оно должно сдвинуть и по какому признаку станет понятно, что выбор неверный.',
+    short: 'решения, которые можно проверить',
+    text: 'Для каждого решения фиксируем, какую метрику оно должно сдвинуть и по какому признаку через полгода станет понятно, что выбор был неверным.',
     result: 'Схема границ системы, ADR и критерии успеха.',
   },
   {
-    title: 'Безопасность ИИ-агентов',
+    id: 'ai',
+    title: 'Безопасность <span class="nw">ИИ-агентов</span>',
+    short: 'Claude Code и Copilot в репозитории',
     text: 'Клиентская выгрузка в рабочей папке и ИИ-ассистент в той же IDE: утечке не нужен злой умысел. Нахожу, куда могут уйти данные, и закрываю эти пути.',
     result: 'Карта доступов агентов, политики, права, журнал действий.',
   },
 ];
 ---
-<section id="work" class="wrap section">
-  <div class="section-head">
-    <h2 class="h2">Чем могу помочь</h2>
-    <p class="intro">Работаю с командами, у которых система уже в продакшене и цена ошибки измеряется деньгами.</p>
-  </div>
+<section id="work" class="work wrap" data-reveal>
+  <h2 class="name-h" data-rv="0">Чем помогаю</h2>
+
   <div class="grid">
-    {items.map((it) => (
-      <article class="card">
-        <h3>{it.title}</h3>
-        <p class="text">{it.text}</p>
-        <p class="result"><span>Результат</span>{it.result}</p>
-      </article>
-    ))}
+    <ol class="names" data-work-list>
+      {items.map((it, i) => (
+        <li data-rv={i + 1}>
+          <button type="button" class:list={['row', i === 0 && 'is-active']} data-work={it.id} aria-controls={`work-${it.id}`} aria-expanded={i === 0 ? 'true' : 'false'}>
+            <span class="big" set:html={it.title} />
+            <span class="short">{it.short}</span>
+          </button>
+          <div class="inline" id={`work-${it.id}-m`}>
+            <p>{it.text} <span class="res-m">Результат: {it.result}</span></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="frame" aria-live="polite">
+      {items.map((it, i) => (
+        <article class:list={['card', i === 0 && 'is-active']} id={`work-${it.id}`} data-card={it.id}>
+          <p class="card-h" set:html={it.title} />
+          <p>{it.text}</p>
+          <p class="res"><span>Результат</span>{it.result}</p>
+        </article>
+      ))}
+    </div>
   </div>
 </section>
 
+<script>
+  const list = document.querySelector<HTMLElement>('[data-work-list]');
+  if (list) {
+    const rows = Array.from(list.querySelectorAll<HTMLButtonElement>('[data-work]'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-card]'));
+    const pick = (id: string) => {
+      rows.forEach((r) => { const on = r.dataset.work === id; r.classList.toggle('is-active', on); r.setAttribute('aria-expanded', String(on)); });
+      cards.forEach((c) => c.classList.toggle('is-active', c.dataset.card === id));
+    };
+    rows.forEach((r) => {
+      r.addEventListener('mouseenter', () => pick(r.dataset.work!));
+      r.addEventListener('focus', () => pick(r.dataset.work!));
+      r.addEventListener('click', () => pick(r.dataset.work!));
+    });
+  }
+</script>
+
 <style>
+  .work { padding-top: var(--gap-section); }
+  .name-h { font-size: var(--step-lead); font-weight: 500; letter-spacing: -0.01em; }
   .grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-    margin-top: 48px;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: var(--margin);
+    margin-top: 40px;
+    align-items: start;
+  }
+  .names { margin: 0; padding: 0; list-style: none; }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 24px;
+    width: 100%;
+    padding: 10px 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  .big {
+    font-size: var(--step-head);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--muted);
+    transition: color var(--t-hover) ease, transform var(--t-ui) var(--ease-out);
+  }
+  .short { font-size: var(--step-small); color: var(--muted); }
+  .row.is-active .big, .row:hover .big { color: var(--ink); }
+  .row.is-active .big { transform: translateX(0.12em); }
+  .inline { display: none; }
+  .big :global(.nw) { white-space: nowrap; }
+
+  .frame {
+    position: sticky;
+    top: 15vh;
+    display: grid;
+    aspect-ratio: 4 / 5;
+    background: var(--surface);
   }
   .card {
+    grid-area: 1 / 1;
     display: flex;
     flex-direction: column;
+    gap: 16px;
     padding: 32px;
-    border-radius: 12px;
-    background: var(--panel);
-    min-width: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 200ms ease, visibility 0s linear 200ms;
   }
-  h3 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
-  .text { margin: 12px 0 0; font-size: 16px; line-height: 24px; color: var(--muted); }
-  .result {
-    margin: auto 0 0;
-    padding-top: 24px;
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--fg);
+  .card.is-active { opacity: 1; visibility: visible; transition: opacity 200ms ease; }
+  .card .card-h { font-size: var(--step-lead); font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; }
+  .card p { font-size: var(--step-body); line-height: 1.5; }
+  .res { margin-top: auto; }
+  .card .res span { display: block; margin-bottom: 6px; color: var(--muted); }
+  .res span { color: var(--muted); }
+
+  @media (max-width: 899px) {
+    .grid { grid-template-columns: minmax(0, 1fr); margin-top: 24px; }
+    .frame { display: none; }
+    .names li + li { margin-top: 56px; }
+    .row { cursor: default; padding: 0; }
+    .big { color: var(--ink); font-size: clamp(2.25rem, 9.5vw, 3rem); }
+    .row.is-active .big { transform: none; }
+    .short { width: 100%; }
+    .inline { display: block; margin-top: 16px; }
+    .res-m { color: var(--muted); }
   }
-  .result span { display: block; margin-bottom: 4px; color: var(--teal); font-weight: 500; }
-  @media (min-width: 768px) {
-    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 767px) { .card { padding: 24px; } }
 </style>

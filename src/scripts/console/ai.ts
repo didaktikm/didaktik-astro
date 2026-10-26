@@ -38,7 +38,7 @@ export const aiCommands: Record<string, Command> = {
         ];
       }
       if (a[0] === 'pull') {
-        await play(ctx, [[`pulling ${model} …`], ['pulling manifest ✓', 'ok'], ['pulling 41 GB ▕██▏ 4%  ETA 6h', 'warn']], 400);
+        await play(ctx, [[`pulling ${model} …`], ['pulling manifest ✓', 'ok'], ['pulling 41 GB ▕██▏ 4%  ETA 6h', 'warn']], 400); // taste-skill-ignore: настоящий вывод CLI
         return [out('Канал 100 Мбит. Можно сходить за кофе. Несколько раз.', 'muted')];
       }
       await play(ctx, [[`loading ${model} …`], ['allocating 41 GB …', 'warn']], 500);

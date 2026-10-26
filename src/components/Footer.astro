@@ -4,35 +4,56 @@ const year = new Date().getFullYear();
 ---
 <footer class="foot wrap">
   <div class="row">
-    <span>© {year} Павел · didaktik.dev · Москва</span>
-    <span class="links">
-      <a href="https://t.me/didaktik" target="_blank" rel="noopener">Telegram</a>
-      <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      <a href="/rss.xml">RSS</a>
-    </span>
+    <p>© {year} Павел, Москва</p>
+    <p class="links">
+      <a class="link" href="https://t.me/didaktik" target="_blank" rel="noopener">Telegram</a>
+      <a class="link" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+    </p>
   </div>
-  <p class="mono build">сборка {buildSha} · {buildDate} · <span data-page-weight>— KB</span> · без трекеров и cookies</p>
+  <p class="build">Сборка {buildSha} от {buildDate}. <span data-page-weight>Вес страницы считается…</span> Без трекеров и cookies.</p>
+  <p class="name" aria-hidden="true"><span data-fit>didaktik</span></p>
 </footer>
 
 <script>
-  // Реальный вес страницы по данным Resource Timing
+  // Реальный вес страницы по Resource Timing
   const el = document.querySelector<HTMLElement>('[data-page-weight]');
   const measure = () => {
     if (!el || !('performance' in window)) return;
     const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
     const res = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
     const bytes = (nav?.transferSize ?? 0) + res.reduce((sum, r) => sum + (r.transferSize || 0), 0);
-    el.textContent = bytes > 0 ? `${Math.round(bytes / 1024)} KB передано` : 'из кэша';
+    el.textContent = bytes > 0 ? `Передано ${Math.round(bytes / 1024)} КБ.` : 'Страница из кэша.';
   };
   if (document.readyState === 'complete') measure();
-  else window.addEventListener('load', () => setTimeout(measure, 0), { once: true });
+  else addEventListener('load', () => setTimeout(measure, 0), { once: true });
+
+  // Имя во всю ширину: размер по измерению, а не на глаз
+  const fit = document.querySelector<HTMLElement>('[data-fit]');
+  const box = fit?.parentElement;
+  if (fit && box) {
+    const run = () => {
+      fit.style.fontSize = '100px';
+      const w = fit.getBoundingClientRect().width;
+      const avail = box.clientWidth;
+      if (w > 0) fit.style.fontSize = `${(100 * avail) / w}px`;
+    };
+    document.fonts?.ready.then(run);
+    addEventListener('resize', run);
+    run();
+  }
 </script>
 
 <style>
-  .foot { margin-top: 96px; padding-block: 32px 96px; border-top: 1px solid var(--line); }
-  .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; font-size: 14px; line-height: 20px; color: var(--muted); }
-  .links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-  .links a { color: var(--fg); }
-  .links a:hover { color: var(--teal); }
-  .build { margin: 16px 0 0; color: var(--faint); }
+  .foot { margin-top: var(--gap-section); padding-top: 56px; padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)); background: var(--surface); overflow: hidden; }
+  .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+  .build { margin-top: 16px; font-size: var(--step-small); color: var(--muted); max-width: none; }
+  .name {
+    margin: 48px 0 0;
+    line-height: 0.78;
+    white-space: nowrap;
+    font-weight: 300;
+    letter-spacing: -0.05em;
+  }
+  .name span { display: inline-block; font-size: 22vw; }
 </style>

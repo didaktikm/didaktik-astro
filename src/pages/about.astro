@@ -7,7 +7,7 @@ const facts = [
   { k: 'Опыт', v: 'больше 20 лет в инфраструктуре' },
   { k: 'Сейчас', v: 'руковожу DevOps-департаментом' },
   { k: 'Должность', v: 'руководитель центра сопровождения процессов разработки ПО' },
-  { k: 'Направления', v: 'аудит платформ, DevOps, архитектура, безопасность <span class="nw">ИИ-агентов</span>' },
+  { k: 'Направления', v: 'аудит платформ, DevOps, архитектура, безопасность ИИ-агентов' },
 ];
 
 const path = [
@@ -28,8 +28,8 @@ const path = [
     text: 'Участвовал в создании озера данных на Arenadata Hadoop и ETL на Spark для банка из топ-5 России. Сформировал с нуля DevOps-направление в департаменте данных и настроил CI/CD.',
   },
   {
-    years: '2022 — сейчас',
-    text: 'Выстроил DevOps в компании с нуля и создал DevOps-департамент. Сократили парк на 300+ виртуальных серверов (расходы на инфраструктуру ниже на 40–50%), перенесли ключевые сервисы в Kubernetes, перевели доставку на GitLab CI и GitOps, мониторинг на VictoriaMetrics. Отвечаю за развитие DevOps-практик, процессы разработки и доставки, бюджет инфраструктуры и облачные платформы.',
+    years: 'С 2022 года',
+    text: 'Выстроил DevOps в компании с нуля и создал DevOps-департамент. Сократили парк на 300+ виртуальных серверов, расходы на инфраструктуру ниже на 40–50%. Перенесли ключевые сервисы в Kubernetes, перевели доставку на GitLab CI и GitOps, мониторинг на VictoriaMetrics. Отвечаю за развитие DevOps-практик, процессы разработки и доставки, бюджет инфраструктуры и облачные платформы.',
   },
 ];
 ---
@@ -37,102 +37,103 @@ const path = [
   title="Обо мне · Павел, DevOps и архитектура инфраструктуры"
   description="Больше двадцати лет в инфраструктуре, руковожу DevOps-департаментом в Москве. Аудит платформ, DevOps, архитектура и безопасность ИИ-агентов."
 >
-  <div class="wrap page">
-    <p class="eyebrow">Обо мне</p>
-    <h1 class="page-title">Павел, руководитель <span class="nw">DevOps-департамента</span> и консультант по инфраструктуре</h1>
-
-    <div class="layout">
-      <div class="prose">
-        <p>Больше двадцати лет занимаюсь инфраструктурой: от IT-подразделения и корпоративной сети с нуля до собственного DevOps-департамента, которым сейчас руковожу в Москве.</p>
-        <p>Как консультант помогаю командам, у которых уже есть прод: провожу аудит платформ, проектирую инфраструктуру и налаживаю доставку. Отдельное направление — безопасность ИИ-агентов в разработке: как дать Claude Code или Copilot доступ к репозиторию и не потерять контроль над данными.</p>
-        <p>Параллельно с основной работой веду собственные исследования и обучаю команды. В заметках пишу о том, что проверил на практике.</p>
-
-        <h2>Путь</h2>
-        <ol class="timeline">
-          {path.map((item) => (
-            <li>
-              <span class="years mono">{item.years}</span>
-              <span class="what">{item.text}</span>
-            </li>
-          ))}
-        </ol>
-
-        <h2>Когда прод не горит</h2>
-        <p>Мотоциклы люблю с детства. Сейчас у меня Ducati Multistrada V4S: на ней хорошо думается, а до ближайшего алерта всегда успеваешь доехать.</p>
-        <figure class="quote">
-          <blockquote>Настоящий мотоцикл, над которым вы работаете, — это вы сами.</blockquote>
-          <figcaption>Роберт Пирсиг, «Дзен и искусство ухода за мотоциклом»</figcaption>
-        </figure>
-        <p>Второе увлечение — штанга. В зале, как и в инфраструктуре, спорить бесполезно: вес на грифе либо поднят, либо нет.</p>
-        <figure class="quote">
-          <blockquote>Железо никогда не лжёт. Двести фунтов — это всегда двести фунтов.</blockquote>
-          <figcaption>Генри Роллинз, эссе «Железо и душа»</figcaption>
-        </figure>
+  <div class="page wrap">
+    <section class="intro" data-reveal>
+      <div class="say">
+        <h1 class="page-title" data-rv="0">Павел, руковожу <span class="nw">DevOps-департаментом</span></h1>
+        <div class="text" data-rv="1">
+          <p class="page-lead">Больше двадцати лет в&nbsp;инфраструктуре: от&nbsp;серверной и&nbsp;сети с&nbsp;нуля до&nbsp;собственного DevOps-департамента.</p>
+          <p>Как консультант помогаю командам, у&nbsp;которых уже есть прод: провожу аудит платформ, проектирую инфраструктуру и&nbsp;налаживаю доставку. Отдельное направление: безопасность ИИ-агентов в&nbsp;разработке: как дать Claude Code или Copilot доступ к&nbsp;репозиторию и&nbsp;не&nbsp;потерять контроль над данными.</p>
+          <p>Параллельно веду собственные исследования и&nbsp;обучаю команды. В&nbsp;заметках пишу о&nbsp;том, что проверил на&nbsp;практике.</p>
+        </div>
       </div>
-
-      <aside class="card" aria-label="Коротко">
+      <aside class="card" aria-label="Коротко" data-rv="2">
         <dl>
           {facts.map((f) => (
-            <div class="fact">
-              <dt>{f.k}</dt>
-              <dd set:html={f.v} />
-            </div>
+            <div class="fact"><dt>{f.k}</dt><dd>{f.v}</dd></div>
           ))}
         </dl>
-        <div class="contact">
-          <a class="btn btn-primary" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать в Telegram</a>
-          <a class="mail" href={`mailto:${contactEmail}`}>{contactEmail}</a>
-        </div>
+        <a class="btn" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>
+        <a class="link mail" href={`mailto:${contactEmail}`}>{contactEmail}</a>
       </aside>
-    </div>
+    </section>
+
+    <section class="path" data-reveal aria-labelledby="path-h">
+      <h2 id="path-h" class="head" data-rv="0">Путь</h2>
+      <ol class="rows">
+        {path.map((p, i) => (
+          <li data-rv={i + 1}>
+            <span class="years">{p.years}</span>
+            <p>{p.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="off" data-reveal aria-labelledby="off-h">
+      <h2 id="off-h" class="head" data-rv="0">Когда прод не горит</h2>
+      <div class="pair">
+        <p class="story" data-rv="1">Мотоциклы люблю с&nbsp;детства. Сейчас у&nbsp;меня Ducati Multistrada V4S: на&nbsp;ней хорошо думается, а&nbsp;до&nbsp;ближайшего алерта всегда успеваешь доехать.</p>
+        <figure class="quote" data-rv="2">
+          <blockquote>Настоящий мотоцикл, над которым вы&nbsp;работаете, — это вы&nbsp;сами.</blockquote>
+          <figcaption>Роберт Пирсиг, «Дзен и&nbsp;искусство ухода за&nbsp;мотоциклом»</figcaption>
+        </figure>
+      </div>
+      <div class="pair flip">
+        <figure class="quote" data-rv="3">
+          <blockquote>Железо никогда не&nbsp;лжёт. Двести фунтов — это всегда двести фунтов.</blockquote>
+          <figcaption>Генри Роллинз, эссе «Железо и&nbsp;душа»</figcaption>
+        </figure>
+        <p class="story" data-rv="4">Второе увлечение: штанга. В&nbsp;зале, как и&nbsp;в&nbsp;инфраструктуре, спорить бесполезно: вес на&nbsp;грифе либо поднят, либо нет.</p>
+      </div>
+    </section>
   </div>
 </Base>
 
 <style>
-  .layout {
+  .nw { white-space: nowrap; }
+  .intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 48px;
-    margin-top: 48px;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: var(--margin) calc(var(--margin) * 2);
+    align-items: end;
   }
-  .card {
-    align-self: start;
-    padding: 24px;
-    border-radius: 12px;
-    background: var(--panel);
-  }
-  .prose .timeline { list-style: none; margin: 24px 0 0; padding: 0; }
-  .prose .timeline li {
+  .text { margin-top: 0; }
+  .text p + p { margin-top: 1em; }
+  .text p:not(.page-lead) { max-width: 60ch; }
+  .say .text { margin-top: 40px; }
+  .page-lead { margin-top: 0; margin-bottom: 1.2em; }
+
+  .card { padding: 32px; background: var(--surface); display: flex; flex-direction: column; gap: 20px; }
+  .card dl { margin: 0; display: grid; gap: 16px; }
+  .fact dt { font-size: var(--step-small); color: var(--muted); }
+  .fact dd { margin: 2px 0 0; }
+  .mail { align-self: flex-start; font-size: var(--step-small); }
+
+  .path, .off { margin-top: var(--gap-section); }
+  .rows { margin: 40px 0 0; padding: 0; list-style: none; display: grid; gap: 32px; }
+  .rows li { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--margin); }
+  .years { font-size: var(--step-lead); line-height: 1.3; }
+  .rows p { max-width: 62ch; }
+
+  .pair {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 4px;
-    padding: 16px 0;
-    border-top: 1px solid var(--line-soft);
-    font-size: 16px;
-    line-height: 24px;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: calc(var(--margin) * 2);
+    align-items: center;
+    margin-top: 56px;
   }
-  .prose .timeline li:last-child { border-bottom: 1px solid var(--line-soft); }
-  .years { color: var(--teal); white-space: nowrap; }
-  .what { color: var(--fg); }
-  @media (min-width: 768px) {
-    .prose .timeline li { grid-template-columns: 128px minmax(0, 1fr); gap: 24px; }
-    .years { padding-top: 2px; }
-  }
-  .prose .quote { margin: 24px 0; }
-  .prose .quote blockquote { margin: 0; font-size: 20px; line-height: 28px; color: var(--fg); }
-  .prose .quote figcaption { margin-top: 8px; padding-left: 22px; font-size: 14px; line-height: 20px; color: var(--faint); }
-  dl { margin: 0; }
-  :global(.nw) { white-space: nowrap; }
-  .fact { padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
-  .fact:first-child { padding-top: 0; }
-  dt { font-size: 14px; line-height: 20px; color: var(--faint); }
-  dd { margin: 4px 0 0; font-size: 16px; line-height: 24px; }
-  .contact { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
-  .contact .btn { justify-content: center; }
-  .mail { font-size: 14px; line-height: 20px; color: var(--muted); text-align: center; }
-  .mail:hover { color: var(--teal); }
-  @media (min-width: 960px) {
-    .layout { grid-template-columns: minmax(0, 1fr) 336px; gap: 64px; }
-    .card { position: sticky; top: 24px; }
+  .pair.flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); margin-top: 72px; }
+  .story { max-width: 44ch; }
+  .quote { margin: 0; padding: 40px; background: var(--surface); }
+  .quote blockquote { margin: 0; font-size: clamp(1.5rem, 1rem + 1.4vw, 2.25rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.02em; max-width: 26ch; }
+  .quote figcaption { margin-top: 20px; font-size: var(--step-small); color: var(--muted); }
+
+  @media (max-width: 899px) {
+    .intro, .rows li, .pair, .pair.flip { grid-template-columns: minmax(0, 1fr); }
+    .card { padding: 24px; }
+    .rows li { gap: 4px; }
+    .pair.flip .quote { order: 2; }
+    .quote { padding: 28px 20px; }
   }
 </style>

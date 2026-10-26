@@ -23,13 +23,13 @@ const FILES: Record<string, string[]> = {
     'сайт       astro 5 · статика · 0 KB серверного кода',
     'отдача     caddy 2 · zstd · CSP без unsafe-inline',
     'доставка   github actions → ghcr → docker compose',
-    'шрифты     unbounded · onest · martian mono (свои, не google)',
+    'шрифты     jost · martian mono (свои, не google)', // taste-skill-ignore: текст вывода консоли
   ],
   'contact.txt': ['didaktik@didaktik.dev'],
 };
 
 // Файлы, которые реально лежат на сервере и читаются запросом
-const REMOTE = ['robots.txt', 'sitemap.xml', 'rss.xml', 'favicon.svg'];
+const REMOTE = ['robots.txt', 'sitemap.xml', 'favicon.svg'];
 
 const csp = (what: string): Line[] => [
   out(`${what}: наружу не хожу.`, 'err'),
@@ -135,7 +135,7 @@ export const realCommands: Record<string, Command> = {
 
   cat: {
     group: 'site',
-    desc: 'показать файл (about.txt, robots.txt, sitemap.xml, rss.xml)',
+    desc: 'показать файл (about.txt, robots.txt, sitemap.xml)',
     usage: 'cat <файл>',
     run: async (args, ctx) => (await readFile(args[0], ctx.signal, ctx.notes)) ?? [out('cat: укажите файл, например cat about.txt', 'err')],
   },
@@ -304,7 +304,7 @@ export const realCommands: Record<string, Command> = {
         `Kernel:   Astro 5 · Caddy 2`,
         `Build:    ${ctx.buildSha}`,
         `Shell:    didaktik shell 0.4`,
-        `Fonts:    Unbounded, Onest, Martian Mono`,
+        `Fonts:    Jost, Martian Mono`, // taste-skill-ignore: текст вывода консоли
         `Weight:   ${kb(pageWeight())}, трекеров 0, cookies 0`,
         `Client:   ${browserName()} на ${platformName()}, ${cores(s.cores)}`,
         `Uptime:   ${fmtDuration(s.uptimeMs)}`,

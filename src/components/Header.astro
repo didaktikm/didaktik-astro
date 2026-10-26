@@ -4,25 +4,58 @@ const { hasNotes } = Astro.props;
 const path = Astro.url.pathname;
 const home = path === '/' ? '' : '/';
 const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
+const links = [
+  { href: `${home}#work`, label: 'Услуги' },
+  { href: `${home}#audit`, label: 'Отчёт' },
+  { href: `${home}#path`, label: 'Путь' },
+  { href: '/about/', label: 'Обо мне', current: current('/about') },
+  ...(hasNotes ? [{ href: '/notes/', label: 'Заметки', current: current('/notes') }] : []),
+];
 ---
 <header class="top wrap">
-  <a class="logo" href="/" aria-label="didaktik, на главную">didaktik<span aria-hidden="true">_</span></a>
-  <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Меню" hidden>
-    <span class="bars" aria-hidden="true"><span></span><span></span></span>
-  </button>
+  <a class="mark" href="/" aria-label="didaktik, на главную">didaktik</a>
+
+  <button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="site-nav" hidden>Меню</button>
+
   <nav class="nav" id="site-nav" aria-label="Основная навигация">
-    <a href={`${home}#work`}>Услуги</a>
-    <a href={`${home}#process`}>Как работаю</a>
-    <a href={`${home}#audit`}>Пример отчёта</a>
-    <a href={`${home}#teach`}>Обучение</a>
-    {hasNotes && <a href="/notes/" aria-current={current('/notes')}>Заметки</a>}
-    <a href="/about/" aria-current={current('/about')}>Обо мне</a>
-    <a class="cta" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать</a>
+    <ul class="links">
+      {links.map((l) => (
+        <li><a href={l.href} aria-current={l.current}>{l.label}</a></li>
+      ))}
+    </ul>
+    <div class="tools">
+      <button type="button" class="tool" data-console-open aria-controls="console" aria-expanded="false">Консоль</button>
+      <button type="button" class="tool" data-theme-toggle aria-label="Переключить тему">
+        <span data-theme-label>Светлая тема</span>
+      </button>
+    </div>
   </nav>
 </header>
 
 <script>
-  // Мобильное меню: без скрипта ссылки просто переносятся на вторую строку
+  // Тема: переключатель с запоминанием
+  const root = document.documentElement;
+  const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]'));
+  const paint = () => {
+    const dark = root.dataset.theme !== 'light';
+    for (const t of toggles) {
+      const label = t.querySelector('[data-theme-label]');
+      if (label) label.textContent = dark ? 'Светлая тема' : 'Тёмная тема';
+      t.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
+    }
+    const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', bg));
+  };
+  for (const t of toggles) {
+    t.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+      paint();
+    });
+  }
+  paint();
+
+  // Мобильное меню: без скрипта ссылки просто стоят в строке под логотипом
   const btn = document.querySelector<HTMLButtonElement>('#menu-btn');
   const nav = document.querySelector<HTMLElement>('#site-nav');
   if (btn && nav) {
@@ -31,113 +64,120 @@ const current = (p: string) => (path.startsWith(p) ? 'page' : undefined);
     const set = (v: boolean) => {
       nav.classList.toggle('open', v);
       btn.setAttribute('aria-expanded', String(v));
-      document.documentElement.classList.toggle('menu-open', v);
+      btn.textContent = v ? 'Закрыть' : 'Меню';
+      root.classList.toggle('menu-open', v);
     };
     btn.addEventListener('click', () => set(!nav.classList.contains('open')));
-    nav.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) set(false); });
+    nav.addEventListener('click', (e) => {
+      const el = e.target as HTMLElement;
+      if (el.closest('a') || el.closest('[data-console-open]')) set(false);
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); }
     });
-    matchMedia('(min-width: 768px)').addEventListener('change', (m) => { if (m.matches) set(false); });
+    matchMedia('(min-width: 900px)').addEventListener('change', (m) => { if (m.matches) set(false); });
   }
 </script>
 
 <style>
   .top {
-    position: relative;
+    position: absolute;
+    inset: 0 0 auto 0;
     z-index: 20;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    padding-block: 24px;
+    min-height: 88px;
+    font-size: 16px;
+    line-height: 24px;
   }
-  .logo { font-family: var(--mono); font-size: 14px; line-height: 20px; color: var(--fg); }
-  .nav { align-items: center; }
-  .logo span { color: var(--teal); }
-  .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 24px; font-size: 14px; line-height: 20px; }
-  .nav a { color: var(--muted); padding-block: 4px; }
-  .nav a:hover { color: var(--fg); }
-  .nav a[aria-current='page'] { color: var(--fg); text-decoration: underline; text-decoration-color: var(--teal); text-underline-offset: 8px; text-decoration-thickness: 1px; }
-  .nav a.cta {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--teal);
-    color: var(--teal);
-    font-weight: 600;
-    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  .mark { font-size: var(--step-lead); font-weight: 500; letter-spacing: -0.01em; }
+  .nav { display: flex; align-items: center; gap: 40px; }
+  .links { display: flex; gap: 28px; margin: 0; padding: 0; list-style: none; }
+  .tools { display: flex; gap: 20px; }
+  .links a, .tool {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--muted);
+    transition: color var(--t-hover) ease;
   }
-  .nav a.cta:hover { background: var(--teal); color: var(--on-teal); }
+  .links a:hover, .tool:hover, .links a[aria-current='page'] { color: var(--ink); }
+  .links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-ui) var(--ease-out);
+  }
+  .links a:hover::after, .links a[aria-current='page']::after { transform: scaleX(1); }
+  .tool { padding: 0; border: 0; background: none; cursor: pointer; }
 
   .menu-btn {
     display: none;
-    position: relative;
-    z-index: 2;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border-radius: 8px;
-    border: 1px solid var(--line);
-    background: transparent;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    font-weight: 500;
     cursor: pointer;
   }
-  .menu-btn[hidden] { display: none; }
-  .bars { position: relative; display: block; width: 16px; height: 8px; margin: 0 auto; }
-  .bars span {
-    position: absolute;
-    left: 0;
-    width: 16px;
-    height: 1.5px;
-    background: var(--fg);
-    transition: transform 0.5s var(--ease);
-  }
-  .bars span:first-child { top: 0; }
-  .bars span:last-child { bottom: 0; }
-  .menu-btn[aria-expanded='true'] .bars span:first-child { transform: translateY(3.25px) rotate(45deg); }
-  .menu-btn[aria-expanded='true'] .bars span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
 
-  @media (max-width: 767px) {
-    .menu-btn:not([hidden]) { display: block; }
+  @media (max-width: 1099px) {
+    .nav { gap: 28px; }
+    .links { gap: 20px; }
+  }
+
+  @media (max-width: 899px) {
+    .top { flex-wrap: wrap; }
+    .menu-btn:not([hidden]) { display: block; position: relative; z-index: 2; }
+    .nav:not(.js) { width: 100%; flex-wrap: wrap; gap: 8px 24px; }
+    .nav:not(.js) .links { flex-wrap: wrap; gap: 4px 20px; }
     .nav.js {
       position: fixed;
       inset: 0;
       z-index: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      gap: 0;
-      padding: 96px max(var(--gutter), env(safe-area-inset-right, 0px)) 48px max(var(--gutter), env(safe-area-inset-left, 0px));
-      background: oklch(0.155 0.012 230 / 0.97);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 32px;
+      padding: 104px max(var(--margin), env(safe-area-inset-right, 0px)) max(32px, env(safe-area-inset-bottom, 0px)) max(var(--margin), env(safe-area-inset-left, 0px));
+      background: var(--bg);
       visibility: hidden;
       opacity: 0;
-      transition: opacity 0.3s var(--ease), visibility 0s linear 0.3s;
+      transition: opacity var(--t-ui) ease, visibility 0s linear var(--t-ui);
     }
-    .nav.js.open { visibility: visible; opacity: 1; transition: opacity 0.3s var(--ease); }
-    .nav.js a {
-      padding: 16px 0;
-      font-weight: 600;
-      font-size: 24px;
-      line-height: 32px;
-      color: var(--fg);
-      border-top: 1px solid var(--line-soft);
+    .nav.js.open { visibility: visible; opacity: 1; transition: opacity var(--t-ui) ease; }
+    .nav.js .links { flex-direction: column; gap: 4px; }
+    .nav.js .links a {
+      min-height: 56px;
+      font-size: var(--step-head);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      color: var(--ink);
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      transform: translateY(16px);
+      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
     }
-    .nav.js a.cta { color: var(--teal); border: 0; border-top: 1px solid var(--line-soft); border-radius: 0; padding: 16px 0; background: none; }
-    .nav.js.open a { opacity: 1; transform: none; }
-    .nav.js.open a:nth-child(2) { transition-delay: 60ms; }
-    .nav.js.open a:nth-child(3) { transition-delay: 120ms; }
-    .nav.js.open a:nth-child(4) { transition-delay: 180ms; }
-    .nav.js.open a:nth-child(5) { transition-delay: 240ms; }
-    .nav.js.open a:nth-child(6) { transition-delay: 300ms; }
-    .nav.js.open a:nth-child(7) { transition-delay: 340ms; }
+    .nav.js .links a::after { display: none; }
+    .nav.js.open .links a { opacity: 1; transform: none; }
+    .nav.js.open li:nth-child(2) a { transition-delay: 50ms; }
+    .nav.js.open li:nth-child(3) a { transition-delay: 100ms; }
+    .nav.js.open li:nth-child(4) a { transition-delay: 150ms; }
+    .nav.js.open li:nth-child(5) a { transition-delay: 200ms; }
+    .nav.js .tools { flex-direction: column; gap: 4px; }
+    .nav.js .tool { font-size: var(--step-lead); color: var(--ink); }
     :global(html.menu-open) { overflow: hidden; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .nav.js a { transform: none !important; }
-    .bars span { transition: none; }
+    .nav.js .links a { transform: none; }
   }
 </style>

@@ -67,9 +67,9 @@ export const devopsCommands: Record<string, Command> = {
       if (sub === 'compose') {
         return [
           out('[+] Running 3/4'),
-          out(' ✔ Container db     Healthy', 'ok'),
-          out(' ✔ Container proxy  Started', 'ok'),
-          out(' ✘ Container app    Exited (1)', 'err'),
+          out(' ✔ Container db     Healthy', 'ok'), // taste-skill-ignore: настоящий вывод docker compose
+          out(' ✔ Container proxy  Started', 'ok'), // taste-skill-ignore: настоящий вывод docker compose
+          out(' ✘ Container app    Exited (1)', 'err'), // taste-skill-ignore: настоящий вывод docker compose
           out('db: «у меня всё хорошо». Healthcheck проверяет только, что процесс жив.', 'muted'),
         ];
       }
@@ -170,7 +170,7 @@ export const devopsCommands: Record<string, Command> = {
     group: 'devops',
     desc: 'выкатить в прод',
     run: async (_a, ctx) => {
-      await play(ctx, [['build   ✓', 'ok'], ['test    ✓  (3 skipped, 12 flaky)', 'ok'], ['push    ✓', 'ok'], ['canary  …']], 380);
+      await play(ctx, [['build   ✓', 'ok'], ['test    ✓  (3 skipped, 12 flaky)', 'ok'], ['push    ✓', 'ok'], ['canary  …']], 380); // taste-skill-ignore: настоящий вывод CLI
       if (isFriday()) return [out('production: ОТКАЗАНО. Сегодня пятница.', 'err'), out('Это не баг. Это политика выживания.', 'muted')];
       return [out('production: выкачено.', 'ok'), out('Следите за дашбордом. Желательно, чтобы смотрели не только вы.', 'muted')];
     },

@@ -2,47 +2,44 @@
 import { SPAN_ORDER, SPAN_META } from '../lib/trace';
 
 const hops = [
-  { id: 'browser', name: 'ваш браузер' },
+  { id: 'browser', name: 'Ваш браузер' },
   { id: 'dns', name: 'DNS' },
-  { id: 'caddy', name: 'Caddy · TLS, HSTS' },
-  { id: 'astro', name: 'didaktik-astro · статика' },
+  { id: 'caddy', name: 'Caddy: TLS, HSTS' },
+  { id: 'astro', name: 'Контейнер: 0,5 CPU, 128 МБ' },
 ];
 const first = SPAN_META.ttfb;
 ---
-<figure class="trace" data-trace>
-  <figcaption class="head">
-    <span class="meta">
-      <span class="mono req">GET didaktik.dev{Astro.url.pathname}</span>
-      <span class="mono" data-trace-source>измеряю ваш запрос…</span>
-    </span>
-    <span class="total"><span data-trace-total>—</span><span class="mono unit">мс</span></span>
+<figure class="trace" data-trace data-ui>
+  <figcaption class="cap">
+    <span class="what">Ваш запрос к&nbsp;этому сайту</span>
+    <span class="src" data-trace-source>измеряю…</span>
   </figcaption>
+
+  <p class="total"><span data-trace-total>—</span><span class="unit">мс</span></p>
+  <p class="req">GET didaktik.dev{Astro.url.pathname}</p>
 
   <div class="spans" role="group" aria-label="Шаги загрузки страницы">
     {SPAN_ORDER.map((key) => (
       <button type="button" class="span" data-span={key} aria-pressed="false">
-        <span class="mono label">{SPAN_META[key].label}</span>
+        <span class="label">{SPAN_META[key].name}</span>
         <span class="track" aria-hidden="true"><span class="bar"></span></span>
-        <span class="mono ms" data-ms>—</span>
+        <span class="ms" data-ms>—</span>
       </button>
     ))}
   </div>
 
   <div class="detail" aria-live="polite">
-    <p class="name"><span data-detail-name>{first.name}</span><span class="mono tag" data-detail-tag></span></p>
+    <p class="name"><span data-detail-name>{first.name}</span> <span class="tag" data-detail-tag></span></p>
     <p class="text" data-detail-text>{first.text}</p>
   </div>
 
-  <div class="hops" aria-label="Путь запроса">
-    {hops.map((h, i) => (
-      <span class="hop-wrap">
-        <span class="mono hop" data-hop={h.id}>{h.name}</span>
-        {i < hops.length - 1 && <span class="mono arrow" aria-hidden="true">→</span>}
-      </span>
+  <ol class="hops" aria-label="Путь запроса">
+    {hops.map((h) => (
+      <li class="hop" data-hop={h.id}>{h.name}</li>
     ))}
-  </div>
+  </ol>
 
-  <noscript><p class="mono noscript">Для трассировки запроса нужен JavaScript: тайминги берутся из вашего браузера.</p></noscript>
+  <noscript><p class="text">Тайминги берутся из вашего браузера, для этого нужен JavaScript.</p></noscript>
 </figure>
 
 <script>
@@ -55,6 +52,7 @@ const first = SPAN_META.ttfb;
     const nameEl = root.querySelector<HTMLElement>('[data-detail-name]')!;
     const textEl = root.querySelector<HTMLElement>('[data-detail-text]')!;
     const tagEl = root.querySelector<HTMLElement>('[data-detail-tag]')!;
+    const totalEl = root.querySelector<HTMLElement>('[data-trace-total]')!;
     let trace: Trace | null = null;
 
     const select = (key: SpanKey) => {
@@ -70,7 +68,7 @@ const first = SPAN_META.ttfb;
       if (trace) {
         const span = trace.spans.find((s) => s.key === key)!;
         const slow = key === trace.slowest;
-        tagEl.textContent = slow ? (key === 'dns' ? 'самый долгий шаг · это был DNS' : 'самый долгий шаг') : fmtMs(span.duration);
+        tagEl.textContent = slow ? `${fmtMs(span.duration)}, самый долгий шаг` : fmtMs(span.duration);
         tagEl.classList.toggle('is-slow', slow);
       }
     };
@@ -82,18 +80,31 @@ const first = SPAN_META.ttfb;
       row.addEventListener('click', () => select(key));
     }
 
+    // Счётчик итога: один раз, от нуля до значения
+    const count = (to: number) => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { totalEl.textContent = String(to); return; }
+      const t0 = performance.now();
+      const dur = 700;
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / dur);
+        totalEl.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 4))));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
     whenTraceReady((t) => {
       trace = t;
-      root.querySelector<HTMLElement>('[data-trace-total]')!.textContent = String(Math.round(t.total));
+      count(Math.round(t.total));
       root.querySelector<HTMLElement>('[data-trace-source]')!.textContent = t.real
-        ? 'Navigation Timing API · ваш запрос'
-        : 'пример значений · браузер не отдал тайминги';
+        ? 'измерено в вашем браузере'
+        : 'пример: браузер не отдал тайминги';
       t.spans.forEach((span, i) => {
         const row = rows.find((r) => r.dataset.span === span.key)!;
         const bar = row.querySelector<HTMLElement>('.bar')!;
         bar.style.left = `${(span.start / t.total) * 100}%`;
-        bar.style.width = `${Math.max((span.duration / t.total) * 100, 0.8)}%`;
-        bar.style.animationDelay = `${i * 0.09}s`;
+        bar.style.width = `${Math.max((span.duration / t.total) * 100, 1)}%`;
+        bar.style.animationDelay = `${i * 90}ms`;
         bar.classList.toggle('is-slow', span.key === t.slowest);
         row.querySelector<HTMLElement>('[data-ms]')!.textContent = fmtMs(span.duration);
       });
@@ -105,99 +116,84 @@ const first = SPAN_META.ttfb;
 
 <style>
   .trace {
-    position: relative;
     margin: 0;
-    padding: 24px 12px;
-    min-width: 0;
-    border-radius: 12px;
-    background: var(--panel);
-  }
-  .head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 8px 16px;
-    padding: 0 12px 16px;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .meta { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .req { color: var(--fg); overflow-wrap: anywhere; }
-  .total {
-    font-family: var(--text);
-    font-weight: 600;
-    font-size: 36px;
-    line-height: 40px;
-    letter-spacing: -0.02em;
+    padding: 28px;
+    background: var(--bg);
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
-  .unit { margin-left: 6px; font-size: 12px; }
+  .cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; font-size: 16px; line-height: 24px; }
+  .what { font-weight: 500; }
+  .src { color: var(--muted); }
 
-  .spans { display: flex; flex-direction: column; gap: 2px; padding-top: 12px; }
+  .total {
+    margin: 24px 0 0;
+    font-size: clamp(64px, 7vw, 112px);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+  .unit { margin-left: 0.18em; font-size: 0.32em; letter-spacing: 0; color: var(--muted); }
+  .req { margin: 12px 0 0; font-size: 15px; line-height: 22px; color: var(--muted); overflow-wrap: anywhere; }
+
+  .spans { display: flex; flex-direction: column; margin: 24px -10px 0; }
   .span {
     display: grid;
-    grid-template-columns: minmax(0, 150px) minmax(0, 1fr) 76px;
+    grid-template-columns: minmax(0, 150px) minmax(0, 1fr) 72px;
     gap: 16px;
     align-items: center;
     width: 100%;
     min-height: 44px;
-    padding: 0 12px;
+    padding: 0 10px;
     border: 0;
-    border-radius: 8px;
     background: transparent;
     text-align: left;
-    transition: background-color 0.2s var(--ease);
+    font-size: 15px;
+    line-height: 20px;
     cursor: pointer;
+    transition: background-color var(--t-hover) ease;
   }
-  .span:hover, .span.is-active { background: var(--teal-dim); }
-  .span.is-active .label { color: var(--fg); }
-  .ms { text-align: right; color: var(--fg); }
+  .span:hover, .span.is-active { background: var(--surface); }
+  .label { color: var(--muted); transition: color var(--t-hover) ease; }
+  .span.is-active .label, .span:hover .label { color: var(--ink); }
+  .ms { text-align: right; }
 
-  .track { position: relative; height: 10px; }
-  .track::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 4px;
-    height: 1px;
-    background: var(--line-soft);
-  }
+  .track { position: relative; height: 12px; background: var(--surface); }
+  .span.is-active .track, .span:hover .track { background: var(--surface-2); }
   .bar {
     position: absolute;
     top: 0;
     left: 0;
     width: 0;
-    height: 10px;
-    border-radius: 2px;
-    background: var(--faint);
+    height: 12px;
+    background: var(--muted);
     transform-origin: left center;
   }
-  .bar.is-slow { background: var(--teal); }
-  .is-ready .bar { animation: grow 0.7s var(--ease) both; }
+  .bar.is-slow { background: var(--accent); }
+  .is-ready .bar { animation: grow 0.8s var(--ease-expo) both; }
   @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  @media (prefers-reduced-motion: reduce) { .is-ready .bar { animation: none; } }
 
-  .detail { margin-top: 16px; padding: 16px 12px 0; border-top: 1px solid var(--line-soft); min-height: 96px; }
-  .name { margin: 0; font-weight: 600; font-size: 16px; line-height: 24px; }
-  .tag { margin-left: 10px; }
-  .tag.is-slow { color: var(--teal); }
-  .text { margin: 8px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); max-width: 60ch; }
+  .detail { min-height: 112px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--ui-line); } /* taste-skill-ignore: интерфейсный фрагмент data-ui */
+  .name { font-size: 16px; line-height: 24px; font-weight: 500; }
+  .tag { margin-left: 8px; font-weight: 400; color: var(--muted); }
+  .tag.is-slow { color: var(--accent); }
+  .text { margin-top: 6px; font-size: 15px; line-height: 22px; color: var(--muted); max-width: 54ch; }
 
-  .hops { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 24px; padding: 0 12px; }
-  .hop-wrap { display: inline-flex; align-items: center; gap: 8px; }
+  .hops { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
   .hop {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    white-space: nowrap;
-    transition: border-color 0.3s var(--ease), background-color 0.3s var(--ease), color 0.3s var(--ease);
+    padding: 8px 12px;
+    border: 1px solid var(--ui-line); /* taste-skill-ignore: интерфейсный фрагмент data-ui */
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted);
+    transition: border-color var(--t-ui) ease, color var(--t-ui) ease, background-color var(--t-ui) ease;
   }
-  .hop.is-on { border-color: var(--teal); background: var(--teal-dim); color: var(--fg); }
-  .noscript { margin: 16px 12px 0; }
+  .hop.is-on { border-color: var(--accent); color: var(--ink); }
 
   @media (max-width: 640px) {
-    .span { grid-template-columns: minmax(0, 92px) minmax(0, 1fr) 60px; gap: 10px; padding: 0 6px; }
-    .head, .hops, .detail { padding-left: 6px; padding-right: 6px; }
+    .trace { padding: 20px 16px; }
+    .span { grid-template-columns: minmax(0, 104px) minmax(0, 1fr) 60px; gap: 10px; font-size: 14px; }
+    .total { margin-top: 16px; }
   }
+  @media (prefers-reduced-motion: reduce) { .is-ready .bar { animation: none; } }
 </style>
