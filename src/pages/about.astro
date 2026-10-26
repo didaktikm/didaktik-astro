@@ -47,7 +47,11 @@ const path = [
           <p>Параллельно веду собственные исследования и&nbsp;обучаю команды. В&nbsp;заметках пишу о&nbsp;том, что проверил на&nbsp;практике.</p>
         </div>
       </div>
-      <aside class="card" aria-label="Коротко" data-rv="2">
+      <div class="side" data-rv="2">
+      <figure class="portrait">
+        <img src="/photos/portrait.webp" width="1200" height="800" alt="Павел в наушниках, улыбается" decoding="async" fetchpriority="high" />
+      </figure>
+      <aside class="card" aria-label="Коротко">
         <dl>
           {facts.map((f) => (
             <div class="fact"><dt>{f.k}</dt><dd>{f.v}</dd></div>
@@ -56,6 +60,7 @@ const path = [
         <a class="btn" href="https://t.me/didaktik" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>
         <a class="link mail" href={`mailto:${contactEmail}`}>{contactEmail}</a>
       </aside>
+      </div>
     </section>
 
     <section class="path" data-reveal aria-labelledby="path-h">
@@ -79,6 +84,20 @@ const path = [
           <figcaption>Роберт Пирсиг, «Дзен и&nbsp;искусство ухода за&nbsp;мотоциклом»</figcaption>
         </figure>
       </div>
+      <div class="shots" data-rv="2">
+        <figure>
+          <img src="/photos/ducati.webp" width="800" height="1000" alt="Ducati Multistrada V4S" loading="lazy" decoding="async" />
+          <figcaption>Ducati Multistrada V4S</figcaption>
+        </figure>
+        <figure>
+          <img src="/photos/rider.webp" width="800" height="1000" alt="Павел за рулём мотоцикла на брусчатке" loading="lazy" decoding="async" />
+          <figcaption>В седле</figcaption>
+        </figure>
+        <figure>
+          <img src="/photos/bmw.webp" width="800" height="1000" alt="BMW K 1600 GTL" loading="lazy" decoding="async" />
+          <figcaption>BMW K 1600 GTL</figcaption>
+        </figure>
+      </div>
       <div class="pair flip">
         <figure class="quote" data-rv="3">
           <blockquote>Железо никогда не&nbsp;лжёт. Двести фунтов — это всегда двести фунтов.</blockquote>
@@ -96,7 +115,7 @@ const path = [
     display: grid;
     grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
     gap: var(--margin) calc(var(--margin) * 2);
-    align-items: end;
+    align-items: center;
   }
   .text { margin-top: 0; }
   .text p + p { margin-top: 1em; }
@@ -104,6 +123,13 @@ const path = [
   .say .text { margin-top: 40px; }
   .page-lead { margin-top: 0; margin-bottom: 1.2em; }
 
+  .side { display: flex; flex-direction: column; gap: var(--margin); }
+  .portrait { margin: 0; }
+  .portrait img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; background: var(--surface); }
+  .shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--margin); margin-top: 72px; }
+  .shots figure { margin: 0; }
+  .shots img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; background: var(--surface); }
+  .shots figcaption { margin-top: 12px; font-size: var(--step-small); color: var(--muted); }
   .card { padding: 32px; background: var(--surface); display: flex; flex-direction: column; gap: 20px; }
   .card dl { margin: 0; display: grid; gap: 16px; }
   .fact dt { font-size: var(--step-small); color: var(--muted); }
@@ -132,6 +158,9 @@ const path = [
   @media (max-width: 899px) {
     .intro, .rows li, .pair, .pair.flip { grid-template-columns: minmax(0, 1fr); }
     .card { padding: 24px; }
+    .shots { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 48px; }
+    .shots figure:nth-child(3) { grid-column: 1 / -1; }
+    .shots figure:nth-child(3) img { aspect-ratio: 4 / 3; }
     .rows li { gap: 4px; }
     .pair.flip .quote { order: 2; }
     .quote { padding: 28px 20px; }

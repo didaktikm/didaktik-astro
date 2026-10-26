@@ -1,0 +1,23 @@
+---
+---
+<section id="outside" class="outside wrap" data-reveal aria-labelledby="out-h">
+  <div class="txt">
+    <h2 id="out-h" class="head" data-rv="0">Когда прод не горит</h2>
+    <p class="lead-text" data-rv="1">Мотоциклы с детства, штанга в&nbsp;зале: на&nbsp;них хорошо думается, а&nbsp;с&nbsp;весом на&nbsp;грифе не&nbsp;поспоришь. Подробнее на&nbsp;странице <a class="link" href="/about/">«Обо мне»</a>.</p>
+  </div>
+  <div class="pics" data-rv="2">
+    <img src="/photos/ducati.webp" width="800" height="1000" alt="Ducati Multistrada V4S" loading="lazy" decoding="async" />
+    <img src="/photos/rider.webp" width="800" height="1000" alt="Павел за рулём мотоцикла на брусчатке" loading="lazy" decoding="async" />
+  </div>
+</section>
+
+<style>
+  .outside { padding-top: var(--gap-section); display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--margin) calc(var(--margin) * 2); align-items: end; }
+  .txt { display: flex; flex-direction: column; gap: 24px; }
+  .pics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--margin); }
+  .pics img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; background: var(--surface); }
+  @media (max-width: 899px) {
+    .outside { grid-template-columns: minmax(0, 1fr); align-items: start; }
+    .pics { gap: 16px; }
+  }
+</style>
